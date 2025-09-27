@@ -1,0 +1,138 @@
+# Fiyova Project Intelligence
+
+## Project Overview
+Fiyova is a modern e-commerce platform built with Next.js 15, Tailwind CSS v4, and HeroUI components, fully integrated with Dodo Payments for payment processing.
+
+## Critical Implementation Patterns
+
+### Server vs Client Components
+- **Server Components**: Use for data fetching (products, product details) to avoid client-side API calls
+- **Client Components**: Use for interactive elements (buttons, forms, checkout flow)
+- **Pattern**: Fetch data in Server Components, pass as props to Client Components
+- **Key Files**: `src/app/page.tsx`, `src/app/products/page.tsx`, `src/app/products/[slug]/page.tsx`
+
+### Dodo Payments Integration
+- **API Key**: `u9MhyWORfeA3Odd4.zwZDxSW2y-k69FbYhixdmmrSg5OmBdGEYY_1dMqBbW6R_32d`
+- **Mode**: Test environment
+- **SDK vs REST**: Use SDK first, fallback to direct REST API calls for reliability
+- **Required Fields**: Always include `billing` object in payment requests
+- **Response Structure**: Dodo API returns nested responses, extract `items` from product lists
+
+### Error Handling Strategy
+- **API Routes**: Always wrap in try-catch, return JSON errors
+- **Client Components**: Show user-friendly error messages
+- **Fallbacks**: Graceful degradation when APIs fail
+- **Pattern**: Check for missing API keys, provide clear error messages
+
+### Payment Flow Architecture
+1. **Product Selection** → Server Component fetches products
+2. **Checkout Initiation** → Client Component handles form submission
+3. **Customer Creation** → API route creates customer in Dodo
+4. **Payment Creation** → API route generates payment link
+5. **Redirect** → User goes to Dodo's checkout page
+6. **Success Handling** → Redirect back to success page with query parameters
+
+### Slug Mapping System
+- **Utility**: `src/lib/product-slug.ts` with `buildSlugMap()` function
+- **Pattern**: Create bidirectional mapping between slugs and product IDs
+- **Usage**: Consistent across all product-related components
+- **SEO**: User-friendly URLs with slug-based routing
+
+## Key Technical Decisions
+
+### Data Fetching
+- **Server-Side**: Fetch products in Server Components to avoid client-side API calls
+- **Caching**: Use `Cache-Control` headers in API routes
+- **Fallbacks**: Show empty states when APIs fail instead of crashing
+
+### API Route Structure
+- **Products**: `/api/dodo/products` - List all products
+- **Product Details**: `/api/dodo/products/[id]` - Get specific product
+- **Customers**: `/api/dodo/customers` - Create customer
+- **Payments**: `/api/dodo/payments` - Create payment link
+- **Webhooks**: `/api/webhooks/dodo` - Handle payment updates
+
+### Component Organization
+- **Reusable Components**: `src/components/products/*` for product-related UI
+- **Page Components**: Server Components for data fetching
+- **Interactive Components**: Client Components for user interactions
+
+## Common Issues and Solutions
+
+### Context Errors
+- **Problem**: "createContext only works in Client Components"
+- **Solution**: Move Button usage to separate Client Components
+- **Files**: `src/components/products/product-actions.tsx`, `src/components/products/product-card-actions.tsx`
+
+### API Response Structure
+- **Problem**: Dodo API returns nested responses
+- **Solution**: Extract `items` from response: `response?.items || response || []`
+- **File**: `src/app/api/dodo/products/route.ts`
+
+### Payment Link Retrieval
+- **Problem**: Dodo API response field names vary
+- **Solution**: Try multiple field names: `payment_link_url`, `payment_link`, `checkout_url`, `url`, `link`
+- **File**: `src/app/checkout/page.tsx`
+
+### Missing Required Fields
+- **Problem**: 422 errors for missing `billing` field
+- **Solution**: Always include default billing object in payment requests
+- **File**: `src/app/api/dodo/payments/route.ts`
+
+## Environment Configuration
+
+### Required Environment Variables
+```bash
+DODO_PAYMENTS_API_KEY=u9MhyWORfeA3Odd4.zwZDxSW2y-k69FbYhixdmmrSg5OmBdGEYY_1dMqBbW6R_32d
+DODO_REDIRECT_URL=http://localhost:3000/checkout/complete
+DODO_MODE=test
+```
+
+### Production Setup
+- **Webhook URL**: `https://yourdomain.com/api/webhooks/dodo`
+- **Redirect URL**: `https://yourdomain.com/checkout/complete`
+- **HTTPS**: Required for production deployment
+
+## User Preferences and Workflow
+
+### Development Approach
+- **Memory Bank**: Always read memory bank files at start of each session
+- **Documentation**: Update memory bank after significant changes
+- **Error Handling**: Comprehensive error management with user feedback
+- **Testing**: End-to-end testing of payment flows
+
+### Code Quality
+- **TypeScript**: Use type safety throughout
+- **Error Boundaries**: Graceful error handling
+- **User Experience**: Clear feedback and loading states
+- **Performance**: Server-side rendering for optimal performance
+
+## Project Evolution
+
+### Recent Changes
+- **Dodo Integration**: Complete payment system implementation
+- **Success Page**: Enhanced payment completion handling
+- **Error Recovery**: Comprehensive error management
+- **UI/UX**: Modern, responsive design
+
+### Current Status
+- **Core Functionality**: Complete and working
+- **Payment System**: Fully functional in test mode
+- **Production Ready**: Yes, pending production API keys
+- **Next Phase**: Production deployment and testing
+
+## Key Files to Remember
+
+### Critical Files
+- `src/lib/dodo.ts` - Dodo client configuration
+- `src/lib/product-slug.ts` - Slug mapping utilities
+- `src/app/api/dodo/payments/route.ts` - Payment processing
+- `src/app/checkout/complete/page.tsx` - Success page
+- `src/components/products/*` - Reusable product components
+
+### API Routes
+- All Dodo integration routes in `/api/dodo/`
+- Webhook handling in `/api/webhooks/dodo/`
+- Error handling and fallbacks in all routes
+
+This project demonstrates a complete e-commerce platform with modern architecture, secure payment processing, and excellent user experience. The memory bank contains comprehensive documentation of all implementation details and patterns.
