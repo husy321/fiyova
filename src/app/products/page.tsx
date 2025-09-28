@@ -6,42 +6,43 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
 import { buildSlugMap, toSlug } from "@/lib/product-slug";
 import { useEffect, useState } from "react";
+import { Product, ProductsApiResponse } from "@/types";
 
-async function getProducts() {
+async function getProducts(): Promise<Product[]> {
   try {
     // Use relative URL for client-side fetch
     const url = "/api/dodo/products";
     console.log("Fetching products from:", url);
-    
-    const res = await fetch(url, { 
+
+    const res = await fetch(url, {
       cache: "no-store",
       headers: {
         'Content-Type': 'application/json',
       }
     });
-    
+
     console.log("Response status:", res.status);
     if (!res.ok) {
       console.log("Response not ok:", res.status, res.statusText);
       const errorText = await res.text();
       console.log("Error response:", errorText);
-      return [] as any[];
+      return [];
     }
-    
-    const data = await res.json();
+
+    const data: ProductsApiResponse = await res.json();
     console.log("API response data:", data);
     console.log("Products array:", data.products);
     console.log("Products count:", data.products?.length || 0);
-    
-    return (data.products || []) as any[];
+
+    return data.products || [];
   } catch (error) {
     console.log("Error fetching products:", error);
-    return [] as any[];
+    return [];
   }
 }
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -92,7 +93,7 @@ export default function ProductsPage() {
         <p className="text-center text-foreground/70">No products available.</p>
       ) : (
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {products.map((p: any) => {
+        {products.map((p: Product) => {
           const id = p.product_id ?? p.id;
           const slug = idToSlug.get(id) ?? toSlug(p.name ?? String(id));
           return (

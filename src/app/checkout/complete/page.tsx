@@ -5,8 +5,9 @@ import { Button } from "@heroui/react";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
 import { CheckCircle, XCircle, Clock } from "lucide-react";
+import { Suspense } from "react";
 
-export default function CheckoutCompletePage() {
+function CheckoutCompleteContent() {
   const params = useSearchParams();
   const paymentId = params.get("payment_id");
   const status = params.get("status");
@@ -18,20 +19,18 @@ export default function CheckoutCompletePage() {
   const isPending = status === "pending" || status === "processing";
 
   return (
-    <>
-      <Header />
-      <div className="mx-auto max-w-md px-4 py-16">
+    <div className="mx-auto max-w-md px-4 py-16">
       <div className="text-center">
         {isSuccess && <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />}
         {isFailed && <XCircle className="mx-auto h-16 w-16 text-red-500 mb-4" />}
         {isPending && <Clock className="mx-auto h-16 w-16 text-yellow-500 mb-4" />}
-        
+
         <h1 className="text-2xl font-semibold mb-2">
           {isSuccess && "Payment Successful!"}
           {isFailed && "Payment Failed"}
           {isPending && "Payment Processing"}
         </h1>
-        
+
         <p className="text-foreground/70 mb-4">
           {isSuccess && "Thank you for your purchase! Your payment has been processed successfully."}
           {isFailed && "Unfortunately, your payment could not be processed. Please try again."}
@@ -70,7 +69,25 @@ export default function CheckoutCompletePage() {
           </div>
         )}
       </div>
-      </div>
+    </div>
+  );
+}
+
+export default function CheckoutCompletePage() {
+  return (
+    <>
+      <Header />
+      <Suspense fallback={
+        <div className="mx-auto max-w-md px-4 py-16">
+          <div className="text-center">
+            <div className="mx-auto h-16 w-16 rounded-full bg-gray-200 animate-pulse mb-4" />
+            <div className="h-8 bg-gray-200 rounded animate-pulse mb-2" />
+            <div className="h-4 bg-gray-200 rounded animate-pulse mb-4" />
+          </div>
+        </div>
+      }>
+        <CheckoutCompleteContent />
+      </Suspense>
       <Footer />
     </>
   );

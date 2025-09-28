@@ -11,9 +11,8 @@ export function getDodoClient() {
   console.log("API key starts with:", bearerToken.substring(0, 10));
   console.log("Dodo mode:", mode);
   
-  return new DodoPayments({ 
-    bearerToken,
-    mode: mode as "live" | "test"
+  return new DodoPayments({
+    bearerToken
   });
 }
 

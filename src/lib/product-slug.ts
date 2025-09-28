@@ -1,3 +1,5 @@
+import { Product } from "@/types";
+
 export function toSlug(input: string): string {
   return input
     .toLowerCase()
@@ -7,7 +9,7 @@ export function toSlug(input: string): string {
     .replace(/-+/g, "-");
 }
 
-export function buildSlugMap(products: Array<any>) {
+export function buildSlugMap(products: Product[]) {
   const slugToId = new Map<string, string>();
   const idToSlug = new Map<string, string>();
   for (const p of products) {

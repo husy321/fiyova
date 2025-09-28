@@ -5,9 +5,10 @@ import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import { ProductSkeleton } from "@/components/ui/product-skeleton";
 import { buildSlugMap, toSlug } from "@/lib/product-slug";
 import { useEffect, useState } from "react";
+import { Product, ProductsApiResponse } from "@/types";
 
-export function Products({ products = [] }: { products?: any[] }) {
-  const [clientProducts, setClientProducts] = useState(products);
+export function Products({ products = [] }: { products?: Product[] }) {
+  const [clientProducts, setClientProducts] = useState<Product[]>(products);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -15,7 +16,7 @@ export function Products({ products = [] }: { products?: any[] }) {
       setLoading(true);
       fetch("/api/dodo/products")
         .then(res => res.json())
-        .then(data => {
+        .then((data: ProductsApiResponse) => {
           setClientProducts(data.products || []);
           setLoading(false);
         })
@@ -50,7 +51,7 @@ export function Products({ products = [] }: { products?: any[] }) {
         <p className="text-center text-foreground/70">No products available.</p>
       ) : (
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {clientProducts.map((p: any) => {
+        {clientProducts.map((p: Product) => {
           const id = p.product_id ?? p.id;
           const slug = idToSlug.get(id) ?? toSlug(p.name ?? String(id));
           return (

@@ -1,31 +1,32 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
 import { buildSlugMap } from "@/lib/product-slug";
+import { Product, ProductsApiResponse } from "@/types";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const params = useSearchParams();
   const slug = params.get("slug") || "";
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
 
   // Load product info on mount
   useEffect(() => {
     async function loadProduct() {
       try {
-        const productList = await fetch("/api/dodo/products", { cache: "no-store" }).then((r) => r.json());
+        const productList: ProductsApiResponse = await fetch("/api/dodo/products", { cache: "no-store" }).then((r) => r.json());
         const products = productList.products || [];
         const { slugToId } = buildSlugMap(products);
         const productId = slugToId.get(slug);
         if (productId) {
-          const match = products.find((p: any) => (p.product_id ?? p.id) === productId);
-          setProduct(match);
+          const match = products.find((p: Product) => (p.product_id ?? p.id) === productId);
+          setProduct(match || null);
         }
       } catch (err) {
         console.error("Error loading product:", err);
@@ -39,10 +40,10 @@ export default function CheckoutPage() {
     setLoading(true);
     try {
       // Get products and build slug mapping
-      const productList = await fetch("/api/dodo/products", { cache: "no-store" }).then((r) => r.json());
+      const productList: ProductsApiResponse = await fetch("/api/dodo/products", { cache: "no-store" }).then((r) => r.json());
       const products = productList.products || [];
       const { slugToId } = buildSlugMap(products);
-      
+
       // Find product by slug using the same mapping logic
       const productId = slugToId.get(slug);
       if (!productId) {
@@ -50,8 +51,8 @@ export default function CheckoutPage() {
         console.log("Looking for slug:", slug);
         throw new Error(`Product not found for slug: ${slug}`);
       }
-      
-      const match = products.find((p: any) => (p.product_id ?? p.id) === productId);
+
+      const match = products.find((p: Product) => (p.product_id ?? p.id) === productId);
       if (!match) throw new Error("Product not found");
 
       // Optionally create customer first
@@ -69,9 +70,9 @@ export default function CheckoutPage() {
       console.log("Payment keys:", Object.keys(payment || {}));
 
       // Try different possible field names for the payment link
-      const paymentLink = payment?.payment_link_url || 
-                         payment?.payment_link || 
-                         payment?.checkout_url || 
+      const paymentLink = payment?.payment_link_url ||
+                         payment?.payment_link ||
+                         payment?.checkout_url ||
                          payment?.url ||
                          payment?.link;
 
@@ -82,16 +83,15 @@ export default function CheckoutPage() {
         console.log("Available payment fields:", payment);
         throw new Error("Missing payment link - available fields: " + Object.keys(payment || {}).join(", "));
       }
-    } catch (e: any) {
-      setError(e?.message || "Checkout failed");
+    } catch (e: unknown) {
+      const error = e as Error;
+      setError(error?.message || "Checkout failed");
       setLoading(false);
     }
   }
 
   return (
-    <>
-      <Header />
-      <div className="mx-auto max-w-md px-4 py-16">
+    <div className="mx-auto max-w-md px-4 py-16">
       <h1 className="text-2xl font-semibold">Checkout</h1>
       {product ? (
         <div className="mt-2 p-4 border rounded-lg">
@@ -108,7 +108,27 @@ export default function CheckoutPage() {
         <Button isLoading={loading} color="primary" onPress={handleCheckout}>Pay</Button>
         {error ? <p className="text-red-600 text-sm">{error}</p> : null}
       </div>
-      </div>
+    </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <>
+      <Header />
+      <Suspense fallback={
+        <div className="mx-auto max-w-md px-4 py-16">
+          <div className="h-8 bg-gray-200 rounded animate-pulse mb-4" />
+          <div className="h-24 bg-gray-200 rounded animate-pulse mb-6" />
+          <div className="space-y-3">
+            <div className="h-12 bg-gray-200 rounded animate-pulse" />
+            <div className="h-12 bg-gray-200 rounded animate-pulse" />
+            <div className="h-12 bg-gray-200 rounded animate-pulse" />
+          </div>
+        </div>
+      }>
+        <CheckoutContent />
+      </Suspense>
       <Footer />
     </>
   );

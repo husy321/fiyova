@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 const webhook = new Webhook(process.env.DODO_WEBHOOK_KEY!);
 
 export async function POST(request: Request) {
-  const headersList = headers();
+  const headersList = await headers();
   const rawBody = await request.text();
 
   const webhookHeaders = {
@@ -15,10 +15,10 @@ export async function POST(request: Request) {
 
   try {
     await webhook.verify(rawBody, webhookHeaders);
-    const payload = JSON.parse(rawBody);
+    // const payload = JSON.parse(rawBody);
     // TODO: process payload (e.g., update order/payment status in DB)
     return new Response(null, { status: 200 });
-  } catch (err) {
+  } catch {
     return new Response("Invalid signature", { status: 400 });
   }
 }

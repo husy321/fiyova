@@ -3,17 +3,18 @@ import { ProductActions } from "@/components/products/product-actions";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
 import { buildSlugMap } from "@/lib/product-slug";
+import { Product, ProductsApiResponse } from "@/types";
 
-async function getProducts() {
+async function getProducts(): Promise<Product[]> {
   try {
     const base = process.env.NEXT_PUBLIC_BASE_URL ?? "";
     const url = base ? `${base}/api/dodo/products` : `/api/dodo/products`;
     const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return [] as any[];
-    const data = await res.json();
-    return (data.products || []) as any[];
+    if (!res.ok) return [];
+    const data: ProductsApiResponse = await res.json();
+    return data.products || [];
   } catch {
-    return [] as any[];
+    return [];
   }
 }
 
@@ -25,7 +26,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const products = await getProducts();
   const { slugToId } = buildSlugMap(products);
   const productId = slugToId.get(params.slug) ?? params.slug;
-  const product = products.find((p: any) => (p.product_id ?? p.id) === productId);
+  const product = products.find((p: Product) => (p.product_id ?? p.id) === productId);
   if (!product) return notFound();
 
   return (

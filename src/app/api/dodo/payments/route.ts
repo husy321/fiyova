@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDodoClient } from "@/lib/dodo";
+import { PaymentCreateParams } from "@/types";
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
       const client = getDodoClient();
       console.log("Client created, attempting payment creation with SDK...");
       
-      const payment = await client.payments.create({
+      const paymentParams: PaymentCreateParams = {
         payment_link: true,
         product_cart: [{ product_id, quantity }],
         customer,
@@ -26,7 +27,10 @@ export async function POST(request: Request) {
           street: "Unknown",
           zipcode: "00000"
         }
-      });
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payment = await client.payments.create(paymentParams as any);
 
       console.log("Payment created successfully with SDK:", payment);
       return NextResponse.json({ payment }, { status: 200 });
@@ -37,7 +41,7 @@ export async function POST(request: Request) {
       const mode = process.env.DODO_MODE === "live" ? "live" : "test";
       const base = process.env.DODO_API_BASE || (mode === "live" ? "https://live.dodopayments.com" : "https://test.dodopayments.com");
       
-      const paymentData = {
+      const paymentData: PaymentCreateParams = {
         payment_link: true,
         product_cart: [{ product_id, quantity }],
         customer,

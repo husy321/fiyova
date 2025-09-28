@@ -16,7 +16,7 @@ export function Hero() {
             className="mb-4 flex items-center gap-2"
           >
             <Badge color="default" variant="flat">No subscription</Badge>
-            <Badge color="primary" variant="bordered">Instant download</Badge>
+            <Badge color="primary" variant="flat">Instant download</Badge>
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
