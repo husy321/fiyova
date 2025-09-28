@@ -31,12 +31,6 @@
   --text-5xl: 3rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 /* Explicit class-based dark mode for the theme toggle */
 .dark {

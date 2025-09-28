@@ -24,9 +24,18 @@ type PageProps = {
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const products = await getProducts();
+  console.log("Products loaded:", products.length);
+  console.log("Looking for slug:", params.slug);
+
   const { slugToId } = buildSlugMap(products);
+  console.log("Slug to ID map:", Array.from(slugToId.entries()));
+
   const productId = slugToId.get(params.slug) ?? params.slug;
+  console.log("Resolved product ID:", productId);
+
   const product = products.find((p: Product) => (p.product_id ?? p.id) === productId);
+  console.log("Found product:", product);
+
   if (!product) return notFound();
 
   return (

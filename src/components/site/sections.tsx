@@ -1,8 +1,8 @@
 "use client";
-import Link from "next/link";
 import Image from "next/image";
-import { Button, Card, CardBody, CardHeader } from "@heroui/react";
+import { Card, CardBody, CardHeader } from "@heroui/react";
 import { ProductSkeleton } from "@/components/ui/product-skeleton";
+import { ProductCardActions } from "@/components/products/product-card-actions";
 import { buildSlugMap, toSlug } from "@/lib/product-slug";
 import { useEffect, useState } from "react";
 import { Product, ProductsApiResponse } from "@/types";
@@ -70,10 +70,7 @@ export function Products({ products = [] }: { products?: Product[] }) {
                 <span className="text-sm text-default-500">${(p.price ?? p.default_price ?? 0) / 100}</span>
               </div>
               <p className="mt-1 text-sm text-default-500 line-clamp-2">{p.description}</p>
-              <div className="mt-3 flex gap-2">
-                <Button as={Link} href={`/products/${slug}`} color="primary" variant="shadow" size="sm">View</Button>
-                <Button as={Link} href={`/checkout?slug=${slug}`} variant="flat" size="sm">Buy</Button>
-              </div>
+              <ProductCardActions slug={slug} />
             </CardHeader>
           </Card>
           );
