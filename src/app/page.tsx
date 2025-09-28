@@ -6,8 +6,11 @@ import { Product, ProductsApiResponse } from "@/types";
 
 async function getProducts(): Promise<Product[]> {
   try {
-    // Use relative URL for server-side rendering
-    const url = "/api/dodo/products";
+    // Use full URL for server-side rendering
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_BASE_URL || 'https://fiyova.co';
+    const url = `${baseUrl}/api/dodo/products`;
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) {
       return [];
