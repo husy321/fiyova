@@ -25,6 +25,8 @@ Fiyova is a modern e-commerce platform built with Next.js 15, integrating with D
 - `/api/dodo/customers` - Customer creation
 - `/api/dodo/payments` - Payment link generation
 - `/api/webhooks/dodo` - Payment webhook handling
+- `/api/auth/signup` - User registration with secure password hashing
+- `/api/auth/login` - User authentication and session management
 
 ### Payment Flow
 
@@ -34,6 +36,16 @@ Fiyova is a modern e-commerce platform built with Next.js 15, integrating with D
 4. Payment Creation → API route generates payment link
 5. Redirect → User goes to Dodo's checkout page
 6. Success Handling → Redirect back with query parameters
+
+### Authentication Flow
+
+1. User Registration → Client form validates input and submits to signup API
+2. Password Hashing → Server securely hashes password with scrypt and random salt
+3. User Storage → User data saved to persistent storage (JSON file in development)
+4. User Login → Client form submits credentials to login API
+5. Credential Verification → Server verifies email exists and password hash matches
+6. Session Management → User data stored in localStorage for client-side auth state
+7. Header Integration → Auth state displayed in header with login/logout functionality
 
 ### Key Technical Patterns
 
@@ -48,6 +60,13 @@ Fiyova is a modern e-commerce platform built with Next.js 15, integrating with D
 - Utility in `src/lib/product-slug.ts` with `buildSlugMap()` function
 - Bidirectional mapping between slugs and product IDs for SEO-friendly URLs
 - Consistent usage across all product-related components
+
+**Authentication System**:
+- User management service in `src/lib/users.ts` with secure password hashing
+- Development-friendly persistent storage using JSON file (`users.json`)
+- Scrypt-based password hashing with random salts for security
+- Client-side authentication state management via localStorage
+- Header component integration with login/logout functionality
 
 **Error Handling**:
 - API routes wrapped in try-catch with JSON error responses
@@ -75,19 +94,29 @@ DODO_REDIRECT_URL=http://localhost:3000/checkout/complete
 **Missing Required Fields**: 422 errors for missing `billing` field
 - Solution: Always include default billing object in payment requests
 
+**Authentication Issues**: Users not persisting across development server restarts
+- Solution: Use persistent storage (JSON file) instead of in-memory arrays for development
+- Hot reloading can reset in-memory state, causing login issues
+
 ## Key Files
 
 ### Critical Files
 - `src/lib/dodo.ts` - Dodo client configuration
 - `src/lib/product-slug.ts` - Slug mapping utilities
+- `src/lib/users.ts` - User management service with authentication
 - `src/app/api/dodo/payments/route.ts` - Payment processing
+- `src/app/api/auth/signup/route.ts` - User registration endpoint
+- `src/app/api/auth/login/route.ts` - User authentication endpoint
 - `src/app/checkout/complete/page.tsx` - Payment success handling
+- `users.json` - Development user storage (gitignored)
 
 ### Page Structure
 - `src/app/page.tsx` - Landing page with product listing
 - `src/app/products/page.tsx` - Product catalog
 - `src/app/products/[slug]/page.tsx` - Individual product pages
 - `src/app/checkout/page.tsx` - Checkout flow
+- `src/app/signup/page.tsx` - User registration form
+- `src/app/login/page.tsx` - User authentication form
 
 ### Component Organization
 - `src/components/products/*` - Reusable product components

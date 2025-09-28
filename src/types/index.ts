@@ -19,6 +19,26 @@ export interface Customer {
   name?: string;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  password_hash: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SignupRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: Omit<User, 'password_hash'>;
+  token?: string;
+}
+
 export interface PaymentRequest {
   product_id: string;
   customer_email: string;
