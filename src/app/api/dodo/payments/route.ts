@@ -4,10 +4,22 @@ import { PaymentCreateParams } from "@/types";
 
 export async function POST(request: Request) {
   try {
-    const { product_id, quantity = 1, customer, redirect_url } = await request.json();
-    if (!product_id) return NextResponse.json({ error: "Missing product_id" }, { status: 400 });
+    const { product_id, quantity = 1, product_cart, customer, redirect_url } = await request.json();
 
-    console.log("Creating payment for product_id:", product_id);
+    // Handle both single product and multiple products (cart)
+    let finalProductCart;
+    if (product_cart) {
+      // Multiple products from cart
+      console.log("Creating payment for cart with", product_cart.length, "items:", product_cart);
+      finalProductCart = product_cart;
+    } else if (product_id) {
+      // Single product
+      console.log("Creating payment for single product_id:", product_id);
+      finalProductCart = [{ product_id, quantity }];
+    } else {
+      return NextResponse.json({ error: "Missing product_id or product_cart" }, { status: 400 });
+    }
+
     console.log("API Key length:", process.env.DODO_PAYMENTS_API_KEY?.length);
     
     // Try SDK first, fallback to REST
@@ -17,7 +29,7 @@ export async function POST(request: Request) {
       
       const paymentParams: PaymentCreateParams = {
         payment_link: true,
-        product_cart: [{ product_id, quantity }],
+        product_cart: finalProductCart,
         customer,
         redirect_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
         billing: {
@@ -29,11 +41,22 @@ export async function POST(request: Request) {
         }
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const payment = await client.payments.create(paymentParams as any);
+      // Use checkoutSessions.create as per Dodo SDK documentation
+      const checkoutSession = await client.checkoutSessions.create({
+        product_cart: finalProductCart,
+        customer,
+        redirect_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
+        billing: {
+          city: "Unknown",
+          country: "US",
+          state: "Unknown",
+          street: "Unknown",
+          zipcode: "00000"
+        }
+      });
 
-      console.log("Payment created successfully with SDK:", payment);
-      return NextResponse.json({ payment }, { status: 200 });
+      console.log("Checkout session created successfully with SDK:", checkoutSession);
+      return NextResponse.json({ payment: checkoutSession }, { status: 200 });
     } catch (sdkError) {
       console.log("SDK failed, trying REST API:", sdkError);
       
@@ -43,7 +66,7 @@ export async function POST(request: Request) {
       
       const paymentData: PaymentCreateParams = {
         payment_link: true,
-        product_cart: [{ product_id, quantity }],
+        product_cart: finalProductCart,
         customer,
         redirect_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
         billing: {
@@ -55,10 +78,10 @@ export async function POST(request: Request) {
         }
       };
       
-      console.log("REST payment data:", paymentData);
-      console.log("REST URL:", `${base}/payments`);
-      
-      const res = await fetch(`${base}/payments`, {
+      console.log("REST checkout session data:", paymentData);
+      console.log("REST URL:", `${base}/checkout-sessions`);
+
+      const res = await fetch(`${base}/checkout-sessions`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.DODO_PAYMENTS_API_KEY}`,
@@ -71,13 +94,13 @@ export async function POST(request: Request) {
       if (!res.ok) {
         const text = await res.text();
         console.log("REST error response:", text);
-        return NextResponse.json({ error: `Payment creation failed: ${res.status} ${text}` }, { status: 500 });
+        return NextResponse.json({ error: `Checkout session creation failed: ${res.status} ${text}` }, { status: 500 });
       }
       
-      const payment = await res.json();
-      console.log("Payment created successfully with REST:", payment);
-      console.log("Payment keys:", Object.keys(payment));
-      return NextResponse.json({ payment }, { status: 200 });
+      const checkoutSession = await res.json();
+      console.log("Checkout session created successfully with REST:", checkoutSession);
+      console.log("Checkout session keys:", Object.keys(checkoutSession));
+      return NextResponse.json({ payment: checkoutSession }, { status: 200 });
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unexpected error";
