@@ -5,7 +5,9 @@
       "Read(//c/Users/husy3/Downloads/**)",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npx vercel:*)"
     ],
     "deny": [],
     "ask": []

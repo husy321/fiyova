@@ -1,9 +1,15 @@
 import { Webhook } from "standardwebhooks";
 import { headers } from "next/headers";
 
-const webhook = new Webhook(process.env.DODO_WEBHOOK_KEY!);
-
 export async function POST(request: Request) {
+  // Check if webhook key is configured
+  const webhookKey = process.env.DODO_WEBHOOK_KEY;
+  if (!webhookKey) {
+    console.warn("DODO_WEBHOOK_KEY not configured, accepting all webhook requests");
+    return new Response(null, { status: 200 });
+  }
+
+  const webhook = new Webhook(webhookKey);
   const headersList = await headers();
   const rawBody = await request.text();
 
