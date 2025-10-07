@@ -19,18 +19,19 @@ async function getProducts(): Promise<Product[]> {
 }
 
 type PageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export default async function ProductDetailPage({ params }: PageProps) {
+  const { slug } = await params;
   const products = await getProducts();
   console.log("Products loaded:", products.length);
-  console.log("Looking for slug:", params.slug);
+  console.log("Looking for slug:", slug);
 
   const { slugToId } = buildSlugMap(products);
   console.log("Slug to ID map:", Array.from(slugToId.entries()));
 
-  const productId = slugToId.get(params.slug) ?? params.slug;
+  const productId = slugToId.get(slug) ?? slug;
   console.log("Resolved product ID:", productId);
 
   const product = products.find((p: Product) => (p.product_id ?? p.id) === productId);
@@ -39,12 +40,13 @@ export default async function ProductDetailPage({ params }: PageProps) {
   if (!product) return notFound();
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <Header />
+      <main className="flex-1">
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="rounded-xl border border-black/10 p-6 dark:border-white/10">
-          <div className="aspect-square w-full rounded bg-black/5 dark:bg-white/10 flex items-center justify-center">
+        <div className="rounded-xl bg-default-100 p-6">
+          <div className="aspect-square w-full rounded bg-default-100 flex items-center justify-center">
             {product.image ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={product.image} alt="" className="h-14 opacity-80" />
@@ -55,12 +57,13 @@ export default async function ProductDetailPage({ params }: PageProps) {
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{product.name}</h1>
           <p className="mt-2 text-foreground/70">{product.description}</p>
           <div className="mt-4 text-lg font-medium">${(product.price ?? 0) / 100}</div>
-          <ProductActions slug={params.slug} />
+          <ProductActions slug={slug} product={product} />
         </div>
       </div>
       </div>
+      </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

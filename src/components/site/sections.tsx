@@ -50,12 +50,12 @@ export function Products({ products = [] }: { products?: Product[] }) {
       {clientProducts.length === 0 ? (
         <p className="text-center text-foreground/70">No products available.</p>
       ) : (
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="flex flex-wrap gap-6 justify-center">
         {clientProducts.map((p: Product) => {
           const id = p.product_id ?? p.id;
           const slug = idToSlug.get(id) ?? toSlug(p.name ?? String(id));
           return (
-          <Card key={id} className="max-w-[400px]">
+          <Card key={id} className="w-[300px] h-[300px]">
             <CardBody className="p-0">
               <div className="h-40 rounded-t-xl bg-default-100 flex items-center justify-center">
                 {p.image ? (
@@ -83,7 +83,7 @@ export function Products({ products = [] }: { products?: Product[] }) {
 
 export function Footer() {
   return (
-    <footer className="border-t border-default-200 py-12 text-sm text-default-500">
+    <footer className="border-t border-default-200 py-4 text-sm text-default-500">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
           <Image src="/fiyova-logo.svg" alt="Fiyova" width={24} height={24} className="size-6" />

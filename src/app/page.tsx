@@ -25,9 +25,9 @@ async function getProducts(): Promise<Product[]> {
 export default async function Home() {
   const products = await getProducts();
   return (
-    <div className="font-sans">
+    <div className="font-sans min-h-screen flex flex-col">
       <Header />
-      <main>
+      <main className="flex-1">
         <Hero />
         <Products products={products} />
       </main>

@@ -7,6 +7,7 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
 import { buildSlugMap } from "@/lib/product-slug";
 import { useCart } from "@/contexts/cart-context";
+import { useAuth } from "@/contexts/auth-context";
 import { Product, ProductsApiResponse } from "@/types";
 
 function CheckoutContent() {
@@ -14,31 +15,20 @@ function CheckoutContent() {
   const slug = params.get("slug") || "";
   const isCartCheckout = params.get("cart") === "true";
   const { items: cartItems, getCartTotal } = useCart();
+  const { user } = useAuth();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
 
-  // If no slug and not cart checkout, show a message to select a product
-  if (!slug && !isCartCheckout) {
-    return (
-      <div className="mx-auto max-w-md px-4 py-16">
-        <h1 className="text-2xl font-semibold">Checkout</h1>
-        <div className="mt-4 p-4 border rounded-lg bg-warning-50 border-warning-200">
-          <p className="text-warning-800 font-medium">No product selected</p>
-          <p className="text-warning-700 text-sm mt-1">
-            Please select a product from our catalog to proceed with checkout.
-          </p>
-        </div>
-        <div className="mt-6">
-          <Button as={Link} href="/products" color="primary" size="lg" className="w-full">
-            Browse Products
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  // Auto-populate user info if logged in
+  useEffect(() => {
+    if (user) {
+      setEmail(user.email);
+      setName(user.name);
+    }
+  }, [user]);
 
   // Load product info on mount
   useEffect(() => {
@@ -82,6 +72,26 @@ function CheckoutContent() {
       console.warn("No slug provided in URL and not cart checkout");
     }
   }, [slug, isCartCheckout]);
+
+  // If no slug and not cart checkout, show a message to select a product
+  if (!slug && !isCartCheckout) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16">
+        <h1 className="text-2xl font-semibold">Checkout</h1>
+        <div className="mt-4 p-4 border rounded-lg bg-warning-50 border-warning-200">
+          <p className="text-warning-800 font-medium">No product selected</p>
+          <p className="text-warning-700 text-sm mt-1">
+            Please select a product from our catalog to proceed with checkout.
+          </p>
+        </div>
+        <div className="mt-6">
+          <Button as={Link} href="/products" color="primary" size="lg" className="w-full">
+            Browse Products
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   async function handleCheckout() {
     setError(null);
@@ -224,12 +234,19 @@ function CheckoutContent() {
 
       {/* Checkout Form */}
       <div className="mt-6 grid gap-3">
+        {user && (
+          <div className="p-3 border rounded-lg bg-success-50 border-success-200">
+            <p className="text-success-800 text-sm">✓ Using your account information</p>
+          </div>
+        )}
         <Input
           label="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           variant="bordered"
           isRequired
+          isReadOnly={!!user}
+          description={user ? "From your account" : undefined}
         />
         <Input
           label="Name"
@@ -237,6 +254,8 @@ function CheckoutContent() {
           onChange={(e) => setName(e.target.value)}
           variant="bordered"
           isRequired
+          isReadOnly={!!user}
+          description={user ? "From your account" : undefined}
         />
         <Button
           isLoading={loading}

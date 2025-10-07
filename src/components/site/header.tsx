@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string; email: string; name: string; role?: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { getCartCount } = useCart();
   const pathname = usePathname();
@@ -83,11 +83,11 @@ export function Header() {
                   <DropdownItem key="dashboard" as={Link} href="/dashboard" startContent={<User size={16} />}>
                     Dashboard
                   </DropdownItem>
-                  {user?.role === "admin" && (
+                  {user?.role === "admin" ? (
                     <DropdownItem key="admin" as={Link} href="/admin" startContent={<User size={16} />}>
                       Admin Panel
                     </DropdownItem>
-                  )}
+                  ) : null}
                   <DropdownItem key="logout" startContent={<LogOut size={16} />} onClick={() => logout()}>
                     Sign out
                   </DropdownItem>

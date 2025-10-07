@@ -63,8 +63,8 @@ function CheckoutCompleteContent() {
 
         {isFailed && (
           <div className="mt-6">
-            <Button as={Link} href="/checkout" color="primary" variant="shadow">
-              Try Again
+            <Button as={Link} href="/products" color="primary" variant="shadow">
+              Choose Another Product
             </Button>
           </div>
         )}

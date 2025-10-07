@@ -66,8 +66,9 @@ export default function ProductsPage() {
   
   if (loading) {
     return (
-      <>
+      <div className="min-h-screen flex flex-col">
         <Header />
+        <main className="flex-1">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">All products</h1>
@@ -75,15 +76,17 @@ export default function ProductsPage() {
           </div>
           <ProductSkeleton count={12} />
         </div>
+        </main>
         <Footer />
-      </>
+      </div>
     );
   }
 
   const { idToSlug } = buildSlugMap(products);
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <Header />
+      <main className="flex-1">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">All products</h1>
@@ -120,8 +123,9 @@ export default function ProductsPage() {
       </div>
       )}
       </div>
+      </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

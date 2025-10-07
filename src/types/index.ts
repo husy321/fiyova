@@ -73,3 +73,23 @@ export interface PaymentCreateParams {
     zipcode: string;
   };
 }
+
+export interface Order {
+  id: string;
+  product_name: string;
+  amount: number;
+  status: "completed" | "pending" | "failed";
+  date: string;
+  customer_email: string;
+  payment_id: string;
+  currency: string;
+  items?: Record<string, unknown>[];
+  download_url?: string;
+}
+
+export interface OrdersResponse {
+  orders: Order[];
+  total: number;
+  page: number;
+  limit: number;
+}

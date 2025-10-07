@@ -45,8 +45,8 @@ export async function POST(request: Request) {
       const checkoutSession = await client.checkoutSessions.create({
         product_cart: finalProductCart,
         customer,
-        redirect_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
-        billing: {
+        return_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
+        billing_address: {
           city: "Unknown",
           country: "US",
           state: "Unknown",
@@ -64,12 +64,11 @@ export async function POST(request: Request) {
       const mode = process.env.DODO_MODE === "live" ? "live" : "test";
       const base = process.env.DODO_API_BASE || (mode === "live" ? "https://live.dodopayments.com" : "https://test.dodopayments.com");
       
-      const paymentData: PaymentCreateParams = {
-        payment_link: true,
+      const paymentData = {
         product_cart: finalProductCart,
         customer,
-        redirect_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
-        billing: {
+        return_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
+        billing_address: {
           city: "Unknown",
           country: "US",
           state: "Unknown",

@@ -9,7 +9,17 @@
       "Bash(git commit:*)",
       "Bash(npx vercel:*)",
       "Bash(git push:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "WebFetch(domain:fiyova.co)",
+      "Bash(npm run dev:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.dodopayments.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm run lint)",
+      "Bash(npm ls:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
