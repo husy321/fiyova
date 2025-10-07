@@ -70,7 +70,7 @@ export function Products({ products = [] }: { products?: Product[] }) {
                 <span className="text-sm text-default-500">${(p.price ?? p.default_price ?? 0) / 100}</span>
               </div>
               <p className="mt-1 text-sm text-default-500 line-clamp-2">{p.description}</p>
-              <ProductCardActions slug={slug} />
+              <ProductCardActions slug={slug} product={p} />
             </CardHeader>
           </Card>
           );
