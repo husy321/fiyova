@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Button, Input, Card, CardBody, Divider } from "@heroui/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -8,7 +8,7 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
 import { LogIn, Eye, EyeOff, Mail, Lock } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -189,5 +189,28 @@ export default function LoginPage() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center py-16 px-4">
+          <Card className="w-full max-w-md">
+            <CardBody className="p-8">
+              <div className="text-center">
+                <LogIn className="mx-auto h-12 w-12 text-primary mb-4" />
+                <p className="text-foreground/70">Loading...</p>
+              </div>
+            </CardBody>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

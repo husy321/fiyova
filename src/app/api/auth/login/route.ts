@@ -32,7 +32,17 @@ export async function POST(request: Request) {
       user
     };
 
-    return NextResponse.json(response, { status: 200 });
+    // Set auth cookie
+    const res = NextResponse.json(response, { status: 200 });
+    res.cookies.set("auth-token", JSON.stringify(user), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/"
+    });
+
+    return res;
   } catch (error: unknown) {
     console.error("Login error:", error);
 

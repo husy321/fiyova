@@ -46,10 +46,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="grid gap-8 md:grid-cols-2">
         <div className="rounded-xl bg-default-100 p-6">
-          <div className="aspect-square w-full rounded bg-default-100 flex items-center justify-center">
+          <div className="aspect-square w-full rounded bg-default-100 flex items-center justify-center overflow-hidden">
             {product.image ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={product.image} alt="" className="h-14 opacity-80" />
+              <img src={product.image} alt={product.name || 'Product'} className="w-full h-full object-cover" />
             ) : null}
           </div>
         </div>

@@ -43,7 +43,7 @@ export class UserService {
     return timingSafeEqual(hashedPassword, storedHashBuffer);
   }
 
-  static async createUser(userData: SignupRequest): Promise<Omit<User, 'password_hash'>> {
+  static async createUser(userData: SignupRequest & { role?: "user" | "admin" }): Promise<Omit<User, 'password_hash'>> {
     const users = loadUsers();
 
     // Check if user already exists
@@ -61,6 +61,7 @@ export class UserService {
       email: userData.email.toLowerCase(),
       name: userData.name,
       password_hash,
+      role: userData.role || "user",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };

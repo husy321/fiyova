@@ -151,13 +151,13 @@ export default function AdminPage() {
               products.map((product) => (
                 <Card key={product.product_id || product.id}>
                   <CardBody className="p-4">
-                    <div className="aspect-video bg-default-100 rounded-lg mb-4 flex items-center justify-center">
+                    <div className="aspect-video bg-default-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                       {product.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="h-12 opacity-80"
+                          className="w-full h-full object-cover"
                         />
                       ) : (
                         <Upload className="text-default-400" size={24} />

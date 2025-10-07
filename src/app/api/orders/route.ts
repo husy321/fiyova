@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDodoClient } from "@/lib/dodo";
+import { OrderService } from "@/lib/orders";
+import { Order } from "@/types";
 
 export async function GET(request: Request) {
   try {
@@ -7,12 +9,31 @@ export async function GET(request: Request) {
     const userEmail = searchParams.get('customer_email');
     const limit = parseInt(searchParams.get('limit') || '50');
     const page = parseInt(searchParams.get('page') || '1');
+    const forceRefresh = searchParams.get('refresh') === 'true';
 
     if (!userEmail) {
       return NextResponse.json({ error: "Customer email is required" }, { status: 400 });
     }
 
-    console.log("Fetching payments for customer:", userEmail);
+    console.log("Fetching orders for customer:", userEmail);
+
+    // Try to get orders from local cache first (unless force refresh is requested)
+    if (!forceRefresh) {
+      const cachedResult = OrderService.getOrdersByEmail(userEmail, limit, page);
+      if (cachedResult.orders.length > 0) {
+        console.log(`Returning ${cachedResult.orders.length} orders from cache`);
+        return NextResponse.json({
+          orders: cachedResult.orders,
+          total: cachedResult.total,
+          page,
+          limit,
+          source: "cache"
+        });
+      }
+      console.log("No cached orders found, fetching from Dodo API");
+    } else {
+      console.log("Force refresh requested, fetching from Dodo API");
+    }
 
     try {
       const client = getDodoClient();
@@ -42,11 +63,18 @@ export async function GET(request: Request) {
       // Filter by customer email since the API doesn't support this filter
       const orders = allOrders.filter(order => order.customer_email === userEmail);
 
+      // Cache the orders locally
+      orders.forEach(order => {
+        OrderService.createOrUpdateOrder(order);
+      });
+      console.log(`Cached ${orders.length} orders from Dodo SDK`);
+
       return NextResponse.json({
         orders,
         total: orders.length, // Dodo API doesn't provide total count in list response
         page,
-        limit
+        limit,
+        source: "dodo_sdk"
       });
 
     } catch (sdkError) {
@@ -94,11 +122,18 @@ export async function GET(request: Request) {
         download_url: (payment.status === 'succeeded' && (payment.items as { download_url?: string }[])?.[0]?.download_url ? (payment.items as { download_url?: string }[])[0].download_url : undefined) as string | undefined
       }));
 
+      // Cache the orders locally
+      orders.forEach((order: Order) => {
+        OrderService.createOrUpdateOrder(order);
+      });
+      console.log(`Cached ${orders.length} orders from Dodo REST API`);
+
       return NextResponse.json({
         orders,
         total: paymentsData?.total || orders.length,
         page,
-        limit
+        limit,
+        source: "dodo_rest"
       });
     }
 

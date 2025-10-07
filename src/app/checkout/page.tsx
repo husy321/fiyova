@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Button, Input } from "@heroui/react";
+import { Button, Input, Select, SelectItem } from "@heroui/react";
 import Link from "next/link";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
@@ -9,6 +9,7 @@ import { buildSlugMap } from "@/lib/product-slug";
 import { useCart } from "@/contexts/cart-context";
 import { useAuth } from "@/contexts/auth-context";
 import { Product, ProductsApiResponse } from "@/types";
+import { countries } from "@/lib/countries";
 
 function CheckoutContent() {
   const params = useSearchParams();
@@ -18,6 +19,11 @@ function CheckoutContent() {
   const { user } = useAuth();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [country, setCountry] = useState("MV");
+  const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
+  const [state, setState] = useState("");
+  const [zipcode, setZipcode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
@@ -100,6 +106,15 @@ function CheckoutContent() {
       // Optionally create customer first
       const customer = email && name ? { email, name } : undefined;
 
+      // Build billing address
+      const billing = {
+        city: city || "Unknown",
+        country: country,
+        state: state || "Unknown",
+        street: address || "Unknown",
+        zipcode: zipcode || "00000"
+      };
+
       if (isCartCheckout) {
         // Multi-item cart checkout
         if (cartItems.length === 0) {
@@ -114,7 +129,7 @@ function CheckoutContent() {
         const res = await fetch("/api/dodo/payments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product_cart, customer }),
+          body: JSON.stringify({ product_cart, customer, billing }),
         });
         const { payment, error } = await res.json();
         if (error) throw new Error(error);
@@ -153,7 +168,7 @@ function CheckoutContent() {
         const res = await fetch("/api/dodo/payments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product_id: match.product_id ?? match.id, quantity: 1, customer }),
+          body: JSON.stringify({ product_id: match.product_id ?? match.id, quantity: 1, customer, billing }),
         });
         const { payment, error } = await res.json();
         if (error) throw new Error(error);
@@ -257,6 +272,54 @@ function CheckoutContent() {
           isReadOnly={!!user}
           description={user ? "From your account" : undefined}
         />
+        <Input
+          label="Address"
+          placeholder="Street address"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          variant="bordered"
+          isRequired
+        />
+        <div className="grid grid-cols-2 gap-3">
+          <Input
+            label="City"
+            placeholder="City"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            variant="bordered"
+            isRequired
+          />
+          <Input
+            label="State/Province"
+            placeholder="State"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+            variant="bordered"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Select
+            label="Country"
+            placeholder="Select country"
+            selectedKeys={[country]}
+            onChange={(e) => setCountry(e.target.value)}
+            variant="bordered"
+            isRequired
+          >
+            {countries.map((c) => (
+              <SelectItem key={c.code}>
+                {c.name}
+              </SelectItem>
+            ))}
+          </Select>
+          <Input
+            label="Zip/Postal Code"
+            placeholder="Zip code"
+            value={zipcode}
+            onChange={(e) => setZipcode(e.target.value)}
+            variant="bordered"
+          />
+        </div>
         <Button
           isLoading={loading}
           color="primary"

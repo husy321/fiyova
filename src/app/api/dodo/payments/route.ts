@@ -4,7 +4,7 @@ import { PaymentCreateParams } from "@/types";
 
 export async function POST(request: Request) {
   try {
-    const { product_id, quantity = 1, product_cart, customer, redirect_url } = await request.json();
+    const { product_id, quantity = 1, product_cart, customer, redirect_url, billing } = await request.json();
 
     // Handle both single product and multiple products (cart)
     let finalProductCart;
@@ -20,7 +20,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing product_id or product_cart" }, { status: 400 });
     }
 
+    // Use provided billing info or defaults
+    const billingAddress = billing || {
+      city: "Unknown",
+      country: "US",
+      state: "Unknown",
+      street: "Unknown",
+      zipcode: "00000"
+    };
+
     console.log("API Key length:", process.env.DODO_PAYMENTS_API_KEY?.length);
+    console.log("Billing address:", billingAddress);
     
     // Try SDK first, fallback to REST
     try {
@@ -32,13 +42,7 @@ export async function POST(request: Request) {
         product_cart: finalProductCart,
         customer,
         redirect_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
-        billing: {
-          city: "Unknown",
-          country: "US",
-          state: "Unknown",
-          street: "Unknown",
-          zipcode: "00000"
-        }
+        billing: billingAddress
       };
 
       // Use checkoutSessions.create as per Dodo SDK documentation
@@ -46,13 +50,7 @@ export async function POST(request: Request) {
         product_cart: finalProductCart,
         customer,
         return_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
-        billing_address: {
-          city: "Unknown",
-          country: "US",
-          state: "Unknown",
-          street: "Unknown",
-          zipcode: "00000"
-        }
+        billing_address: billingAddress
       });
 
       console.log("Checkout session created successfully with SDK:", checkoutSession);
@@ -68,13 +66,7 @@ export async function POST(request: Request) {
         product_cart: finalProductCart,
         customer,
         return_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
-        billing_address: {
-          city: "Unknown",
-          country: "US",
-          state: "Unknown",
-          street: "Unknown",
-          zipcode: "00000"
-        }
+        billing_address: billingAddress
       };
       
       console.log("REST checkout session data:", paymentData);

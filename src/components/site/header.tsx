@@ -14,10 +14,16 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<{ id: string; email: string; name: string; role?: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const { getCartCount } = useCart();
   const pathname = usePathname();
   const isLoginPage = pathname === "/login" || pathname === "/signup";
   const cartCount = getCartCount();
+
+  // Prevent hydration mismatch by only rendering Sheet after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Simple localStorage-based auth check
   useEffect(() => {
@@ -102,48 +108,50 @@ export function Header() {
           {/* Mobile menu */}
           <div className="md:hidden flex items-center gap-2">
             <ThemeToggle />
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetTrigger asChild>
-                <Button isIconOnly aria-label="Open menu" variant="light" radius="full">
-                  <Menu className="size-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Image src="/fiyova-logo.svg" alt="Fiyova" width={32} height={32} className="size-8" />
-                    <span className="text-lg font-bold tracking-tight">Fiyova</span>
-                  </div>
-                  <SheetClose asChild>
-                    <Button isIconOnly aria-label="Close menu" variant="light" radius="full">
-                      <X className="size-5" />
-                    </Button>
-                  </SheetClose>
-                </div>
-                <nav className="mt-8 grid gap-2">
-                  <Link onClick={() => setOpen(false)} href="/" className="rounded-full px-4 py-3 text-base font-medium hover:bg-default-100 transition-colors">Home</Link>
-                  <Link onClick={() => setOpen(false)} href="/products" className="rounded-full px-4 py-3 text-base font-medium hover:bg-default-100 transition-colors">Products</Link>
-                  <Link onClick={() => setOpen(false)} href="/faq" className="rounded-full px-4 py-3 text-base font-medium hover:bg-default-100 transition-colors">FAQ</Link>
-                </nav>
-                <div className="mt-8">
-                  {user ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 px-4 py-3 bg-default-100 rounded-full">
-                        <User size={20} />
-                        <span className="font-medium">{user.name}</span>
-                      </div>
-                      <Button className="w-full" color="danger" variant="light" radius="full" size="lg" startContent={<LogOut size={16} />} onClick={() => logout()}>
-                        Sign out
-                      </Button>
+            {mounted && (
+              <Sheet open={open} onOpenChange={setOpen}>
+                <SheetTrigger asChild>
+                  <Button isIconOnly aria-label="Open menu" variant="light" radius="full">
+                    <Menu className="size-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Image src="/fiyova-logo.svg" alt="Fiyova" width={32} height={32} className="size-8" />
+                      <span className="text-lg font-bold tracking-tight">Fiyova</span>
                     </div>
-                  ) : (
-                    <Button as={Link} href={isLoginPage ? "/signup" : "/login"} className="w-full" color="primary" variant="shadow" radius="full" size="lg">
-                      {isLoginPage ? "Sign up" : "Sign in"}
-                    </Button>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
+                    <SheetClose asChild>
+                      <Button isIconOnly aria-label="Close menu" variant="light" radius="full">
+                        <X className="size-5" />
+                      </Button>
+                    </SheetClose>
+                  </div>
+                  <nav className="mt-8 grid gap-2">
+                    <Link onClick={() => setOpen(false)} href="/" className="rounded-full px-4 py-3 text-base font-medium hover:bg-default-100 transition-colors">Home</Link>
+                    <Link onClick={() => setOpen(false)} href="/products" className="rounded-full px-4 py-3 text-base font-medium hover:bg-default-100 transition-colors">Products</Link>
+                    <Link onClick={() => setOpen(false)} href="/faq" className="rounded-full px-4 py-3 text-base font-medium hover:bg-default-100 transition-colors">FAQ</Link>
+                  </nav>
+                  <div className="mt-8">
+                    {user ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 px-4 py-3 bg-default-100 rounded-full">
+                          <User size={20} />
+                          <span className="font-medium">{user.name}</span>
+                        </div>
+                        <Button className="w-full" color="danger" variant="light" radius="full" size="lg" startContent={<LogOut size={16} />} onClick={() => logout()}>
+                          Sign out
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button as={Link} href={isLoginPage ? "/signup" : "/login"} className="w-full" color="primary" variant="shadow" radius="full" size="lg">
+                        {isLoginPage ? "Sign up" : "Sign in"}
+                      </Button>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            )}
           </div>
         </div>
       </div>

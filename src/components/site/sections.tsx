@@ -57,10 +57,10 @@ export function Products({ products = [] }: { products?: Product[] }) {
           return (
           <Card key={id} className="w-[300px] h-[300px]">
             <CardBody className="p-0">
-              <div className="h-40 rounded-t-xl bg-default-100 flex items-center justify-center">
+              <div className="h-40 rounded-t-xl bg-default-100 flex items-center justify-center overflow-hidden">
                 {p.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.image} alt="" className="h-10 opacity-80" />
+                  <img src={p.image} alt={p.name || 'Product'} className="w-full h-full object-cover" />
                 ) : null}
               </div>
             </CardBody>
