@@ -44,29 +44,23 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      // Create checkout session with Whop
-      const session = await whopSdk.payments.createCheckoutSession({
+      console.log('Creating Whop checkout with plan:', {
         planId: creditPackage.whopPlanId,
         redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/credits/purchase-complete`,
-        metadata: {
-          type: "credit_purchase",
-          packageId: creditPackage.id,
-          userId,
-          userEmail,
-          userName,
-          creditAmount: creditPackage.amount,
-          bonusAmount: creditPackage.bonus || 0,
-          totalCredits: creditPackage.amount + (creditPackage.bonus || 0),
-        },
+        hasApiKey: !!process.env.WHOP_API_KEY,
+        hasAppId: !!process.env.NEXT_PUBLIC_WHOP_APP_ID,
       });
 
-      // Construct checkout URL
-      const checkoutUrl = `https://whop.com/checkout/${session.id}`;
+      // If the plan ID starts with "plan_", it's a checkout link
+      // We can use it directly without creating a session
+      const checkoutUrl = `https://whop.com/checkout/${creditPackage.whopPlanId}`;
+
+      console.log('Using direct checkout URL:', checkoutUrl);
 
       return NextResponse.json({
         success: true,
         checkoutUrl,
-        sessionId: session.id,
+        sessionId: creditPackage.whopPlanId,
         package: {
           id: creditPackage.id,
           name: creditPackage.name,
@@ -82,7 +76,8 @@ export async function POST(req: NextRequest) {
         {
           success: false,
           error: 'Failed to create Whop checkout session. Please check your Whop configuration.',
-          details: whopError instanceof Error ? whopError.message : 'Unknown error'
+          details: whopError instanceof Error ? whopError.message : 'Unknown error',
+          planId: creditPackage.whopPlanId,
         },
         { status: 500 }
       );

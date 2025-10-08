@@ -271,8 +271,8 @@ export const CREDIT_PACKAGES: CreditPurchasePackage[] = [
     amount: 1000, // $10.00 in credits
     price: 1000, // $10.00 price
     description: "Perfect for getting started",
-    whopPlanId: "plan_REPLACE_WITH_YOUR_10_DOLLAR_PLAN_ID", // ← Replace this
-    enabled: true,
+    whopPlanId: "plan_REPLACE_WITH_YOUR_10_DOLLAR_PLAN_ID", // ← Replace this with actual plan ID
+    enabled: false, // Disabled until plan ID is configured
   },
   {
     id: "pkg_25",
@@ -280,9 +280,9 @@ export const CREDIT_PACKAGES: CreditPurchasePackage[] = [
     amount: 2500, // $25.00 in credits
     price: 2500, // $25.00 price
     description: "Popular choice for regular shoppers",
-    whopPlanId: "plan_REPLACE_WITH_YOUR_25_DOLLAR_PLAN_ID", // ← Replace this
+    whopPlanId: "plan_REPLACE_WITH_YOUR_25_DOLLAR_PLAN_ID", // ← Replace this with actual plan ID
     popular: true,
-    enabled: true,
+    enabled: false, // Disabled until plan ID is configured
   },
   {
     id: "pkg_50",
@@ -291,8 +291,8 @@ export const CREDIT_PACKAGES: CreditPurchasePackage[] = [
     price: 5000, // $50.00 price
     bonus: 500, // $5.00 bonus - 10% extra
     description: "Great value - get 10% bonus!",
-    whopPlanId: "plan_REPLACE_WITH_YOUR_50_DOLLAR_PLAN_ID", // ← Replace this
-    enabled: true,
+    whopPlanId: "plan_REPLACE_WITH_YOUR_50_DOLLAR_PLAN_ID", // ← Replace this with actual plan ID
+    enabled: false, // Disabled until plan ID is configured
   },
   {
     id: "pkg_100",
@@ -301,7 +301,7 @@ export const CREDIT_PACKAGES: CreditPurchasePackage[] = [
     price: 10000, // $100.00 price
     bonus: 2000, // $20.00 bonus - 20% extra
     description: "Best value - get 20% bonus!",
-    whopPlanId: "plan_REPLACE_WITH_YOUR_100_DOLLAR_PLAN_ID", // ← Replace this
+    whopPlanId: "plan_dTl9aNsw3ihUc", // ✅ Correct Plan ID
     enabled: true,
   },
 ];
