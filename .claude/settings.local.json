@@ -20,7 +20,12 @@
       "Bash(npm run lint)",
       "Bash(npm ls:*)",
       "Bash(find:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "WebFetch(domain:docs.whop.com)",
+      "WebFetch(domain:dev.whop.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(where ngrok)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

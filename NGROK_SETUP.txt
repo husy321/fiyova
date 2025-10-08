@@ -1,0 +1,54 @@
+NGROK SETUP - Quick Guide
+=========================
+
+Your ngrok auth token: 33nIVALYfHIFhPFKZqPEgwBn8ex_76trfL5PKYDUNG4dTPmTy
+
+STEP 1: Add Auth Token (ONE TIME ONLY)
+---------------------------------------
+Run this command in your terminal:
+
+ngrok config add-authtoken 33nIVALYfHIFhPFKZqPEgwBn8ex_76trfL5PKYDUNG4dTPmTy
+
+
+STEP 2: Start Your Dev Server
+------------------------------
+Terminal 1:
+npm run dev
+
+
+STEP 3: Start ngrok
+-------------------
+Terminal 2:
+ngrok http 3000
+
+OR double-click: start-ngrok.bat
+
+
+STEP 4: Copy the URL
+--------------------
+You'll see something like:
+Forwarding: https://abc123.ngrok.io -> http://localhost:3000
+
+Copy the HTTPS URL (e.g., https://abc123.ngrok.io)
+
+
+STEP 5: Use in Whop Webhook
+----------------------------
+Whop Dashboard → Webhooks → Add Webhook
+URL: https://your-ngrok-url.ngrok.io/api/webhooks/whop
+
+Example: https://abc123.ngrok.io/api/webhooks/whop
+
+
+TROUBLESHOOTING
+---------------
+If ngrok closes immediately:
+1. Make sure you ran the add-authtoken command
+2. Try running from Command Prompt (not PowerShell)
+3. Make sure dev server is running first
+
+If you get a new URL each time:
+- This is normal for free ngrok
+- Just update the webhook URL in Whop Dashboard
+- Takes 30 seconds
+

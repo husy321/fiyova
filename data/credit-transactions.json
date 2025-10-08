@@ -1,0 +1,82 @@
+[
+  {
+    "id": "txn_1759945428724_ubmhjaed8",
+    "userId": "admin@fiyova.co",
+    "type": "purchase",
+    "amount": 2500,
+    "balance_after": 2500,
+    "currency": "USD",
+    "description": "Credit purchase: $25.00",
+    "metadata": {
+      "type": "credit_purchase",
+      "userId": "admin@fiyova.co",
+      "userEmail": "admin@fiyova.co",
+      "userName": "Admin",
+      "creditAmount": 2500,
+      "bonusAmount": 0,
+      "totalCredits": 2500,
+      "paymentMethod": "development"
+    },
+    "createdAt": "2025-10-08T17:43:48.724Z"
+  },
+  {
+    "id": "txn_1759945467203_34plwqlwm",
+    "userId": "admin@fiyova.co",
+    "type": "purchase",
+    "amount": 2500,
+    "balance_after": 5000,
+    "currency": "USD",
+    "description": "Credit purchase: $25.00",
+    "metadata": {
+      "type": "credit_purchase",
+      "userId": "admin@fiyova.co",
+      "userEmail": "admin@fiyova.co",
+      "userName": "Admin",
+      "creditAmount": 2500,
+      "bonusAmount": 0,
+      "totalCredits": 2500,
+      "paymentMethod": "development"
+    },
+    "createdAt": "2025-10-08T17:44:27.203Z"
+  },
+  {
+    "id": "txn_1759945978860_kv50zbz4r",
+    "userId": "admin@fiyova.co",
+    "type": "purchase",
+    "amount": 2500,
+    "balance_after": 7500,
+    "currency": "USD",
+    "description": "Credit purchase: $25.00",
+    "metadata": {
+      "type": "credit_purchase",
+      "userId": "admin@fiyova.co",
+      "userEmail": "admin@fiyova.co",
+      "userName": "Admin",
+      "creditAmount": 2500,
+      "bonusAmount": 0,
+      "totalCredits": 2500,
+      "paymentMethod": "development"
+    },
+    "createdAt": "2025-10-08T17:52:58.860Z"
+  },
+  {
+    "id": "txn_1759946549292_szzlj4txp",
+    "userId": "admin@fiyova.co",
+    "type": "purchase",
+    "amount": 2500,
+    "balance_after": 10000,
+    "currency": "USD",
+    "description": "Credit purchase: $25.00",
+    "metadata": {
+      "type": "credit_purchase",
+      "userId": "admin@fiyova.co",
+      "userEmail": "admin@fiyova.co",
+      "userName": "Admin",
+      "creditAmount": 2500,
+      "bonusAmount": 0,
+      "totalCredits": 2500,
+      "paymentMethod": "development"
+    },
+    "createdAt": "2025-10-08T18:02:29.292Z"
+  }
+]

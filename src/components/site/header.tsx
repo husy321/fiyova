@@ -6,6 +6,7 @@ import { Menu, X, LogOut, User, ShoppingCart } from "lucide-react";
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Badge } from "@heroui/react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { ThemeToggle } from "./theme-toggle";
+import { CreditBalanceBadge } from "@/components/ui/credit-balance-badge";
 // import { useAuth } from "@/contexts/auth-context";
 import { useCart } from "@/contexts/cart-context";
 import { usePathname } from "next/navigation";
@@ -72,6 +73,8 @@ export function Header() {
           {/* Right side actions */}
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
+            {/* Credit Balance */}
+            {user && <CreditBalanceBadge />}
             {/* Cart Icon */}
             <Badge content={cartCount} color="primary" isInvisible={cartCount === 0}>
               <Button as={Link} href="/cart" isIconOnly variant="light" radius="full">
@@ -88,6 +91,9 @@ export function Header() {
                 <DropdownMenu>
                   <DropdownItem key="dashboard" as={Link} href="/dashboard" startContent={<User size={16} />}>
                     Dashboard
+                  </DropdownItem>
+                  <DropdownItem key="transactions" as={Link} href="/account/transactions" startContent={<User size={16} />}>
+                    My Transactions
                   </DropdownItem>
                   {user?.role === "admin" ? (
                     <DropdownItem key="admin" as={Link} href="/admin" startContent={<User size={16} />}>
