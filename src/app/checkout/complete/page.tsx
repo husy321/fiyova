@@ -6,6 +6,7 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
 import { CheckCircle, XCircle, Clock, Package, ShoppingBag } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
+import { Order } from "@/types";
 
 function Confetti() {
   const confettiPieces = Array.from({ length: 50 }, (_, i) => ({
@@ -48,7 +49,7 @@ function CheckoutCompleteContent() {
   const currencyParam = params.get("currency");
 
   const [showContent, setShowContent] = useState(false);
-  const [orderData, setOrderData] = useState<any>(null);
+  const [orderData, setOrderData] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch order data from API if payment_id is available
@@ -134,7 +135,7 @@ function CheckoutCompleteContent() {
                   )}
                   {amount && currency && (
                     <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-3">
-                      {currency.toUpperCase()} ${(parseFloat(amount) / 100).toFixed(2)}
+                      {currency.toUpperCase()} ${(parseFloat(String(amount)) / 100).toFixed(2)}
                     </p>
                   )}
                 </div>
@@ -234,7 +235,7 @@ function CheckoutCompleteContent() {
               </h1>
 
               <p className="text-lg text-foreground/80 mb-8 max-w-md mx-auto">
-                Your payment is being processed. You will receive an email confirmation once it's complete.
+                Your payment is being processed. You will receive an email confirmation once it&apos;s complete.
               </p>
 
               {paymentId && (
