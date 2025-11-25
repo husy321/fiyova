@@ -141,7 +141,9 @@ export function Header() {
                       <ShoppingCart size={20} />
                       Cart
                       {cartCount > 0 && (
-                        <Badge content={cartCount} color="primary" size="sm" />
+                        <Badge content={cartCount} color="primary" isInvisible={cartCount === 0}>
+                          <span className="sr-only">{cartCount} items</span>
+                        </Badge>
                       )}
                     </Link>
                   </nav>
