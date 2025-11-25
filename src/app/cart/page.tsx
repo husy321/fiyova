@@ -36,19 +36,39 @@ export default function CartPage() {
 }
 
 function CartContent() {
-  const { items, removeFromCart, getCartTotal, clearCart } = useCart();
+  const { items, removeFromCart, getCartTotal, clearCart, isLoaded } = useCart();
   const total = getCartTotal();
+
+  // Show loading state until cart is loaded
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-2 text-default-500">Loading cart...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   // Generate checkout URL for cart items
   const getCheckoutUrl = () => {
-    if (items.length === 0) {
+    if (!items || items.length === 0) {
       return "/products"; // No items, redirect to products
     }
 
     if (items.length === 1) {
       // Single item - use slug-based checkout
-      const product = items[0].product;
+      const product = items[0]?.product;
+      if (!product) return "/products";
+      
       const productId = product.product_id || product.id;
+      if (!productId) return "/products";
+      
       const slug = toSlug(product.name || String(productId));
       return `/checkout?slug=${slug}`;
     }
@@ -57,7 +77,7 @@ function CartContent() {
     return "/checkout?cart=true";
   };
 
-  if (items.length === 0) {
+  if (!items || items.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -97,7 +117,7 @@ function CartContent() {
           <div className="grid gap-8 lg:grid-cols-3">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
-              {items.map((item) => {
+              {items.filter(item => item && item.product).map((item) => {
                 const productId = item.product.product_id || item.product.id || "";
                 const price = item.product.price || item.product.default_price || 0;
 

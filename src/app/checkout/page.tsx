@@ -15,7 +15,7 @@ function CheckoutContent() {
   const params = useSearchParams();
   const slug = params.get("slug") || "";
   const isCartCheckout = params.get("cart") === "true";
-  const { items: cartItems, getCartTotal } = useCart();
+  const { items: cartItems, getCartTotal, isLoaded: cartLoaded } = useCart();
   const { user } = useAuth();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -117,14 +117,20 @@ function CheckoutContent() {
 
       if (isCartCheckout) {
         // Multi-item cart checkout
-        if (cartItems.length === 0) {
+        if (!cartLoaded) {
+          throw new Error("Cart is still loading");
+        }
+        
+        if (!cartItems || cartItems.length === 0) {
           throw new Error("No items in cart");
         }
 
-        const product_cart = cartItems.map(item => ({
-          product_id: item.product.product_id || item.product.id,
-          quantity: item.quantity
-        }));
+        const product_cart = cartItems
+          .filter(item => item && item.product)
+          .map(item => ({
+            product_id: item.product.product_id || item.product.id,
+            quantity: item.quantity || 1
+          }));
 
         const res = await fetch("/api/dodo/payments", {
           method: "POST",
@@ -202,21 +208,33 @@ function CheckoutContent() {
       {/* Product Display */}
       {isCartCheckout ? (
         <div className="mt-4 space-y-2">
-          <h3 className="font-medium">Items ({cartItems.length})</h3>
-          {cartItems.map((item, index) => (
-            <div key={index} className="p-3 border rounded-lg bg-default-50">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h4 className="font-medium text-sm">{item.product.name}</h4>
-                  <p className="text-xs text-foreground/70 mt-1">{item.product.description}</p>
-                </div>
-                <div className="text-right ml-2">
-                  <p className="text-sm font-semibold">${((item.product.price ?? 0) / 100).toFixed(2)}</p>
-                  <p className="text-xs text-foreground/70">Qty: {item.quantity}</p>
-                </div>
-              </div>
+          {!cartLoaded ? (
+            <div className="p-3 border rounded-lg bg-default-50 text-center">
+              <p className="text-sm text-foreground/70">Loading cart...</p>
             </div>
-          ))}
+          ) : cartItems && cartItems.length > 0 ? (
+            <>
+              <h3 className="font-medium">Items ({cartItems.length})</h3>
+              {cartItems.filter(item => item && item.product).map((item, index) => (
+                <div key={index} className="p-3 border rounded-lg bg-default-50">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm">{item.product?.name || "Unknown Product"}</h4>
+                      <p className="text-xs text-foreground/70 mt-1">{item.product?.description || ""}</p>
+                    </div>
+                    <div className="text-right ml-2">
+                      <p className="text-sm font-semibold">${((item.product?.price ?? item.product?.default_price ?? 0) / 100).toFixed(2)}</p>
+                      <p className="text-xs text-foreground/70">Qty: {item.quantity || 1}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <div className="p-3 border rounded-lg bg-default-50 text-center">
+              <p className="text-sm text-foreground/70">Your cart is empty</p>
+            </div>
+          )}
           <div className="p-3 border rounded-lg bg-primary-50 border-primary-200">
             <div className="flex justify-between items-center">
               <span className="font-semibold">Total</span>
@@ -324,13 +342,13 @@ function CheckoutContent() {
           isLoading={loading}
           color="primary"
           onPress={handleCheckout}
-          isDisabled={isCartCheckout ? cartItems.length === 0 : !product}
+            isDisabled={isCartCheckout ? (!cartLoaded || !cartItems || cartItems.length === 0) : !product}
           size="lg"
         >
           {isCartCheckout
-            ? cartItems.length > 0
+            ? cartLoaded && cartItems && cartItems.length > 0
               ? `Pay $${(getCartTotal() / 100).toFixed(2)} (${cartItems.length} items)`
-              : "No items in cart"
+              : cartLoaded ? "No items in cart" : "Loading cart..."
             : product
               ? `Pay $${(product.price ?? 0) / 100}`
               : "Select Product"

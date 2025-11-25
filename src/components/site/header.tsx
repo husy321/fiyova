@@ -15,10 +15,10 @@ export function Header() {
   const [user, setUser] = useState<{ id: string; email: string; name: string; role?: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const { getCartCount } = useCart();
+  const { getCartCount, isLoaded: cartLoaded } = useCart();
   const pathname = usePathname();
   const isLoginPage = pathname === "/login" || pathname === "/signup";
-  const cartCount = getCartCount();
+  const cartCount = cartLoaded ? getCartCount() : 0; // Prevent hydration mismatch
 
   // Prevent hydration mismatch by only rendering Sheet after mount
   useEffect(() => {
