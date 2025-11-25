@@ -93,6 +93,12 @@ export function Footer() {
           <a href="/terms" className="hover:text-foreground transition-colors rounded-full px-3 py-1 hover:bg-default-100">
             Terms
           </a>
+          <a href="/privacy" className="hover:text-foreground transition-colors rounded-full px-3 py-1 hover:bg-default-100">
+            Privacy
+          </a>
+          <a href="/refund" className="hover:text-foreground transition-colors rounded-full px-3 py-1 hover:bg-default-100">
+            Refund
+          </a>
           <a href="/faq" className="hover:text-foreground transition-colors rounded-full px-3 py-1 hover:bg-default-100">
             FAQ
           </a>

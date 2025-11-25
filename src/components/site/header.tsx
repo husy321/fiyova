@@ -108,6 +108,12 @@ export function Header() {
           {/* Mobile menu */}
           <div className="md:hidden flex items-center gap-2">
             <ThemeToggle />
+            {/* Mobile Cart Icon */}
+            <Badge content={cartCount} color="primary" isInvisible={cartCount === 0}>
+              <Button as={Link} href="/cart" isIconOnly variant="light" radius="full">
+                <ShoppingCart size={20} />
+              </Button>
+            </Badge>
             {mounted && (
               <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild>
@@ -131,6 +137,13 @@ export function Header() {
                     <Link onClick={() => setOpen(false)} href="/" className="rounded-full px-4 py-3 text-base font-medium hover:bg-default-100 transition-colors">Home</Link>
                     <Link onClick={() => setOpen(false)} href="/products" className="rounded-full px-4 py-3 text-base font-medium hover:bg-default-100 transition-colors">Products</Link>
                     <Link onClick={() => setOpen(false)} href="/faq" className="rounded-full px-4 py-3 text-base font-medium hover:bg-default-100 transition-colors">FAQ</Link>
+                    <Link onClick={() => setOpen(false)} href="/cart" className="rounded-full px-4 py-3 text-base font-medium hover:bg-default-100 transition-colors flex items-center gap-2">
+                      <ShoppingCart size={20} />
+                      Cart
+                      {cartCount > 0 && (
+                        <Badge content={cartCount} color="primary" size="sm" />
+                      )}
+                    </Link>
                   </nav>
                   <div className="mt-8">
                     {user ? (

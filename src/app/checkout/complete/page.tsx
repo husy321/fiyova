@@ -80,7 +80,9 @@ function CheckoutCompleteContent() {
   const productName = orderData?.product_name;
   const customerEmail = orderData?.customer_email;
 
-  const isSuccess = status === "succeeded" || status === "completed" || (!status && orderData);
+  // Default to success if we're on the complete page and have order data or payment_id
+  // This handles cases where status might not be explicitly set
+  const isSuccess = status === "succeeded" || status === "completed" || (!status && (orderData || paymentId));
   const isFailed = status === "failed" || status === "cancelled";
   const isPending = status === "pending" || status === "processing";
 
@@ -241,6 +243,54 @@ function CheckoutCompleteContent() {
               {paymentId && (
                 <div className="bg-yellow-50 dark:bg-yellow-950/30 rounded-2xl p-6 mb-8 border border-yellow-200 dark:border-yellow-800">
                   <p className="text-sm text-foreground/70">Transaction ID: <span className="font-mono">{paymentId}</span></p>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  as={Link}
+                  href="/products"
+                  color="primary"
+                  size="lg"
+                  variant="shadow"
+                  className="font-semibold"
+                >
+                  Continue Shopping
+                </Button>
+                <Button
+                  as={Link}
+                  href="/"
+                  variant="bordered"
+                  size="lg"
+                  className="font-semibold"
+                >
+                  Back to Home
+                </Button>
+              </div>
+            </>
+          )}
+
+          {/* Default/Unknown State - Show success by default if on complete page */}
+          {!isSuccess && !isFailed && !isPending && (
+            <>
+              <div className="relative inline-block mb-6">
+                <div className="absolute inset-0 bg-green-500/20 rounded-full blur-3xl animate-pulse" />
+                <div className="relative bg-gradient-to-br from-green-400 to-emerald-600 rounded-full p-6 shadow-2xl animate-bounce-slow">
+                  <CheckCircle className="h-20 w-20 text-white" strokeWidth={2.5} />
+                </div>
+              </div>
+
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                Order Complete
+              </h1>
+
+              <p className="text-lg text-foreground/80 mb-8 max-w-md mx-auto">
+                Thank you for your purchase! If you have any questions, please contact our support team.
+              </p>
+
+              {paymentId && (
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 rounded-2xl p-6 mb-8 border border-green-200 dark:border-green-800 shadow-lg">
+                  <p className="text-sm text-foreground/70">Order ID: <span className="font-mono font-semibold">{paymentId}</span></p>
                 </div>
               )}
 
