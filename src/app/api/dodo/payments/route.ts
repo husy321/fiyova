@@ -72,7 +72,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Try SDK first, fallback to REST
+    // Try SDK first
     try {
       const client = getDodoClient();
       console.log("Client created, attempting payment creation with SDK...");
@@ -92,10 +92,16 @@ export async function POST(request: Request) {
 
       console.log("Checkout session created successfully with SDK:", checkoutSession);
       return NextResponse.json({ payment: checkoutSession }, { status: 200 });
-    } catch (sdkError) {
-      console.log("SDK failed, trying REST API:", sdkError);
+    } catch (sdkError: any) {
+      console.log("SDK failed:", sdkError);
+      
+      // If it's a validation error (400), don't fallback, just return the error
+      if (sdkError.status === 400 || (sdkError.message && sdkError.message.includes("400"))) {
+        return NextResponse.json({ error: sdkError.message || "Invalid payment data" }, { status: 400 });
+      }
 
-      // Fallback to REST API
+      // Fallback to REST API for other errors
+      console.log("Trying REST API fallback...");
       const mode = process.env.DODO_MODE === "live" ? "live" : "test";
       const base = process.env.DODO_API_BASE || (mode === "live" ? "https://live.dodopayments.com" : "https://test.dodopayments.com");
 

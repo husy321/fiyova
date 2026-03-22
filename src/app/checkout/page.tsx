@@ -102,6 +102,13 @@ function CheckoutContent() {
   async function handleCheckout() {
     setError(null);
     setLoading(true);
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address");
+      setLoading(false);
+      return;
+    }
+
     try {
       // Optionally create customer first
       const customer = email && name ? { email, name } : undefined;
@@ -273,11 +280,14 @@ function CheckoutContent() {
           </div>
         )}
         <Input
+          type="email"
           label="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           variant="bordered"
           isRequired
+          isInvalid={email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}
+          errorMessage={email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "Please enter a valid email address" : undefined}
           isReadOnly={!!user}
           description={user ? "From your account" : undefined}
         />

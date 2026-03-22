@@ -12,7 +12,8 @@ export function getDodoClient() {
   console.log("Dodo mode:", mode);
   
   return new DodoPayments({
-    bearerToken
+    bearerToken,
+    environment: mode === "live" ? "live_mode" : "test_mode"
   });
 }
 
