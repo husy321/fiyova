@@ -54,23 +54,47 @@ function CheckoutCompleteContent() {
 
   // Fetch order data from API if payment_id is available
   useEffect(() => {
-    async function fetchOrderData() {
-      if (paymentId) {
-        try {
-          const response = await fetch(`/api/orders/${paymentId}`);
-          if (response.ok) {
-            const data = await response.json();
-            setOrderData(data);
-          }
-        } catch (error) {
-          console.error("Failed to fetch order data:", error);
-        }
+    let isMounted = true;
+    
+    async function fetchOrderData(retries = 5) {
+      if (!paymentId) {
+        setLoading(false);
+        setShowContent(true);
+        return;
       }
-      setLoading(false);
+      
+      try {
+        const response = await fetch(`/api/orders/${paymentId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (isMounted) {
+            setOrderData(data);
+            setLoading(false);
+            setShowContent(true);
+          }
+          return;
+        } else if (response.status === 404 && retries > 0) {
+          // Retrying if order not found yet (webhook might take a moment)
+          setTimeout(() => {
+            if (isMounted) fetchOrderData(retries - 1);
+          }, 2000);
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to fetch order data:", error);
+      }
+      
+      if (isMounted) {
+        setLoading(false);
+        setShowContent(true);
+      }
     }
 
     fetchOrderData();
-    setShowContent(true);
+    
+    return () => {
+      isMounted = false;
+    };
   }, [paymentId]);
 
   // Use order data from API if available, otherwise fall back to URL params

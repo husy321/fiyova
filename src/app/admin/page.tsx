@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardBody, CardHeader, Button, Input, Textarea, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/react";
+import { Card, CardBody, Button, Input, Textarea, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/react";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
 import { useAuth } from "@/contexts/auth-context";
@@ -14,7 +14,6 @@ export default function AdminPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [editMode, setEditMode] = useState<"create" | "edit" | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -53,13 +52,11 @@ export default function AdminPage() {
   const handleCreateProduct = () => {
     setEditMode("create");
     setFormData({ name: "", description: "", price: "", image: "" });
-    setSelectedProduct(null);
     onOpen();
   };
 
   const handleEditProduct = (product: Product) => {
     setEditMode("edit");
-    setSelectedProduct(product);
     setFormData({
       name: product.name || "",
       description: product.description || "",

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getDodoClient } from "@/lib/dodo";
-import { PaymentCreateParams } from "@/types";
 
 export async function POST(request: Request) {
   try {
