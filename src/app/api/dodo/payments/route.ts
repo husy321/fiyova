@@ -81,7 +81,7 @@ export async function POST(request: Request) {
       const checkoutSession = await client.checkoutSessions.create({
         product_cart: finalProductCart,
         customer: customerData,
-        return_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
+        return_url: redirect_url || process.env.DODO_REDIRECT_URL,
         billing_address: billingAddress,
         confirm: true,
         feature_flags: {
