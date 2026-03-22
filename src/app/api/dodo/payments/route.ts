@@ -94,52 +94,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ payment: checkoutSession }, { status: 200 });
     } catch (sdkError: any) {
       console.log("SDK failed:", sdkError);
-      
-      // If it's a validation error (400), don't fallback, just return the error
-      if (sdkError.status === 400 || (sdkError.message && sdkError.message.includes("400"))) {
-        return NextResponse.json({ error: sdkError.message || "Invalid payment data" }, { status: 400 });
-      }
-
-      // Fallback to REST API for other errors
-      console.log("Trying REST API fallback...");
-      const mode = process.env.DODO_MODE === "live" ? "live" : "test";
-      const base = process.env.DODO_API_BASE || (mode === "live" ? "https://live.dodopayments.com" : "https://test.dodopayments.com");
-
-      const paymentData = {
-        product_cart: finalProductCart,
-        customer: customerData,
-        return_url: redirect_url || `${process.env.DODO_REDIRECT_URL}?payment_id={payment_id}&status={status}&amount={amount}&currency={currency}`,
-        billing_address: billingAddress,
-        confirm: true,
-        feature_flags: {
-          allow_phone_number_collection: false,
-          allow_tax_id: false
-        }
-      };
-
-      console.log("REST checkout session data:", paymentData);
-      console.log("REST URL:", `${base}/checkout-sessions`);
-
-      const res = await fetch(`${base}/checkout-sessions`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.DODO_PAYMENTS_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(paymentData)
-      });
-
-      console.log("REST response status:", res.status);
-      if (!res.ok) {
-        const text = await res.text();
-        console.log("REST error response:", text);
-        return NextResponse.json({ error: `Checkout session creation failed: ${res.status} ${text}` }, { status: 500 });
-      }
-
-      const checkoutSession = await res.json();
-      console.log("Checkout session created successfully with REST:", checkoutSession);
-      console.log("Checkout session keys:", Object.keys(checkoutSession));
-      return NextResponse.json({ payment: checkoutSession }, { status: 200 });
+      return NextResponse.json({ error: sdkError.message || "Failed to create checkout session" }, { status: sdkError.status || 500 });
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unexpected error";
