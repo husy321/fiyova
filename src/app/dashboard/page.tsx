@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardBody, CardHeader, Button, Chip } from "@heroui/react";
+import { Card, CardBody, Button, Chip } from "@heroui/react";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
 import { useAuth } from "@/contexts/auth-context";

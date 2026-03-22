@@ -91,7 +91,8 @@ export async function POST(request: Request) {
 
       console.log("Checkout session created successfully with SDK:", checkoutSession);
       return NextResponse.json({ payment: checkoutSession }, { status: 200 });
-    } catch (sdkError: any) {
+    } catch (error) {
+      const sdkError = error as { message?: string; status?: number };
       console.log("SDK failed:", sdkError);
       return NextResponse.json({ error: sdkError.message || "Failed to create checkout session" }, { status: sdkError.status || 500 });
     }

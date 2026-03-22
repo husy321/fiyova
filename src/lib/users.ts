@@ -71,6 +71,7 @@ export class UserService {
     saveUsers(users);
 
     // Return user without password hash
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password_hash: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
@@ -92,6 +93,7 @@ export class UserService {
       return null;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password_hash: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
@@ -103,6 +105,7 @@ export class UserService {
       return null;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password_hash: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
@@ -110,6 +113,7 @@ export class UserService {
   static getAllUsers(): Omit<User, 'password_hash'>[] {
     const users = loadUsers();
     return users.map(user => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password_hash: _, ...userWithoutPassword } = user;
       return userWithoutPassword;
     });

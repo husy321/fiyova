@@ -12,7 +12,7 @@ type ProductActionsProps = {
   backHref?: string;
 };
 
-export function ProductActions({ slug, product, backHref = "/products" }: ProductActionsProps) {
+export function ProductActions({ slug, product }: ProductActionsProps) {
   const { addToCart, items } = useCart();
   const [isAdding, setIsAdding] = useState(false);
 
