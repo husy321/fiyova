@@ -56,6 +56,13 @@ function CheckoutCompleteContent() {
   useEffect(() => {
     let isMounted = true;
     
+    // If we already have the status from the URL, show the content immediately
+    // so the user doesn't have to wait for the slow webhook polling
+    if (statusParam) {
+      setLoading(false);
+      setShowContent(true);
+    }
+    
     async function fetchOrderData(retries = 5) {
       if (!paymentId) {
         setLoading(false);
@@ -113,10 +120,23 @@ function CheckoutCompleteContent() {
   // Show loading state
   if (loading && paymentId) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 min-h-[70vh] flex items-center justify-center">
-        <div className="text-center">
+      <div className="mx-auto max-w-2xl px-4 py-16 min-h-[70vh] flex flex-col items-center justify-center">
+        <div className="text-center mb-8">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-foreground/70">Loading order details...</p>
+        </div>
+        
+        <div className="bg-default-50 dark:bg-default-100/50 rounded-2xl p-6 border border-default-200 w-full max-w-md shadow-sm">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Package className="h-5 w-5 text-default-500" />
+            <p className="text-sm font-semibold text-default-700">Order Information</p>
+          </div>
+          <p className="text-sm text-foreground/70 mb-2">Transaction ID: <span className="font-mono font-semibold">{paymentId}</span></p>
+          {amountParam && currencyParam && (
+             <p className="text-2xl font-bold text-foreground mt-3 text-center">
+               {currencyParam.toUpperCase()} ${(parseFloat(String(amountParam)) / 100).toFixed(2)}
+             </p>
+          )}
         </div>
       </div>
     );
@@ -218,7 +238,22 @@ function CheckoutCompleteContent() {
 
               {paymentId && (
                 <div className="bg-red-50 dark:bg-red-950/30 rounded-2xl p-6 mb-8 border border-red-200 dark:border-red-800">
-                  <p className="text-sm text-foreground/70">Transaction ID: <span className="font-mono">{paymentId}</span></p>
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <Package className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    <p className="text-sm font-semibold text-red-700 dark:text-red-300">Order Details</p>
+                  </div>
+                  {productName && (
+                    <p className="text-lg font-semibold text-foreground mb-3">{productName}</p>
+                  )}
+                  <p className="text-sm text-foreground/70 mb-2">Transaction ID: <span className="font-mono">{paymentId}</span></p>
+                  {customerEmail && (
+                    <p className="text-sm text-foreground/70 mb-2">Email: <span className="font-semibold">{customerEmail}</span></p>
+                  )}
+                  {amount && currency && (
+                    <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-3 text-center">
+                      {currency.toUpperCase()} ${(parseFloat(String(amount)) / 100).toFixed(2)}
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -266,7 +301,22 @@ function CheckoutCompleteContent() {
 
               {paymentId && (
                 <div className="bg-yellow-50 dark:bg-yellow-950/30 rounded-2xl p-6 mb-8 border border-yellow-200 dark:border-yellow-800">
-                  <p className="text-sm text-foreground/70">Transaction ID: <span className="font-mono">{paymentId}</span></p>
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <Package className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                    <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-300">Order Details</p>
+                  </div>
+                  {productName && (
+                    <p className="text-lg font-semibold text-foreground mb-3">{productName}</p>
+                  )}
+                  <p className="text-sm text-foreground/70 mb-2">Transaction ID: <span className="font-mono">{paymentId}</span></p>
+                  {customerEmail && (
+                    <p className="text-sm text-foreground/70 mb-2">Email: <span className="font-semibold">{customerEmail}</span></p>
+                  )}
+                  {amount && currency && (
+                    <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-3 text-center">
+                      {currency.toUpperCase()} ${(parseFloat(String(amount)) / 100).toFixed(2)}
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -354,9 +404,9 @@ export default function CheckoutCompletePage() {
       <Suspense fallback={
         <div className="mx-auto max-w-md px-4 py-16">
           <div className="text-center">
-            <div className="mx-auto h-16 w-16 rounded-full bg-gray-200 animate-pulse mb-4" />
-            <div className="h-8 bg-gray-200 rounded animate-pulse mb-2" />
-            <div className="h-4 bg-gray-200 rounded animate-pulse mb-4" />
+            <div className="mx-auto h-16 w-16 rounded-full bg-default-200 animate-pulse mb-4" />
+            <div className="h-8 bg-default-200 rounded animate-pulse mb-2" />
+            <div className="h-4 bg-default-200 rounded animate-pulse mb-4" />
           </div>
         </div>
       }>

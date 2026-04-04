@@ -1,0 +1,5 @@
+﻿src/components/admin/sales-chart.tsx(4,92): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+src/components/admin/sales-chart.tsx(71,45): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/components/site/header.tsx(144,26): error TS2322: Type '{ content: number; color: "primary"; size: "sm"; }' is not assignable to type 'IntrinsicAttributes & MergeWithAs<Omit<DetailedHTMLProps<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, "ref">, Omit<...>, BadgeProps, "span">'.
+  Type '{ content: number; color: "primary"; size: "sm"; }' is not assignable to type 'BadgeProps'.
+    Property 'children' is missing in type '{ content: number; color: "primary"; size: "sm"; }' but required in type 'Props'.

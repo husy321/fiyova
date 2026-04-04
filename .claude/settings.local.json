@@ -20,7 +20,8 @@
       "Bash(npm run lint)",
       "Bash(npm ls:*)",
       "Bash(find:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(git branch:*)"
     ],
     "deny": [],
     "ask": []

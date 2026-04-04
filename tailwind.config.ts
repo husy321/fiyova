@@ -7,6 +7,7 @@ export default {
     "./node_modules/@heroui/theme/dist/**/*.{js,mjs}",
     "./node_modules/@heroui/**/*.{js,mjs}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       animation: {
