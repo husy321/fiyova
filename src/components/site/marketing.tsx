@@ -110,14 +110,17 @@ export function WhatWeSell() {
       />
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {categories.map((c) => (
-          <Card key={c.title} className="h-full border border-default-200 shadow-none transition-shadow hover:shadow-md">
+          <Card
+            key={c.title}
+            className="group h-full border border-default-200 shadow-none transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/50 hover:shadow-xl"
+          >
             <CardBody className="gap-4 p-6">
-              <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="size-6">
                   {c.icon}
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold">{c.title}</h3>
+              <h3 className="text-lg font-semibold transition-colors duration-300 group-hover:text-primary">{c.title}</h3>
               <p className="text-sm text-foreground/70">{c.description}</p>
             </CardBody>
           </Card>
@@ -138,9 +141,12 @@ export function Benefits() {
         />
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {benefits.map((b) => (
-            <div key={b.title} className="flex flex-col gap-2">
+            <div
+              key={b.title}
+              className="group flex flex-col gap-2 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-background hover:shadow-md"
+            >
               <div className="flex items-center gap-2">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="size-5 text-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="size-5 text-primary transition-transform duration-300 group-hover:scale-125">
                   <path d="M20 6L9 17l-5-5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <h3 className="font-semibold">{b.title}</h3>
@@ -164,9 +170,12 @@ export function HowItWorks() {
       />
       <div className="grid gap-6 md:grid-cols-3">
         {steps.map((s) => (
-          <Card key={s.step} className="h-full border border-default-200 shadow-none">
+          <Card
+            key={s.step}
+            className="group h-full border border-default-200 shadow-none transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/50 hover:shadow-xl"
+          >
             <CardBody className="gap-3 p-6">
-              <span className="text-3xl font-bold text-primary/30">{s.step}</span>
+              <span className="text-3xl font-bold text-primary/30 transition-colors duration-300 group-hover:text-primary">{s.step}</span>
               <h3 className="text-lg font-semibold">{s.title}</h3>
               <p className="text-sm text-foreground/70">{s.description}</p>
             </CardBody>
