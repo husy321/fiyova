@@ -100,18 +100,18 @@ export default function ProductsPage() {
           const id = p.product_id ?? p.id;
           const slug = idToSlug.get(id) ?? toSlug(p.name ?? String(id));
           return (
-          <Card key={id} className="w-[300px] h-[300px]">
+          <Card key={id} className="group w-[300px] h-[300px] border border-transparent transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-primary/50 hover:shadow-xl">
             <CardBody className="p-0">
               <div className="h-40 rounded-t-xl bg-default-100 flex items-center justify-center overflow-hidden">
                 {p.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.image} alt={p.name || 'Product'} className="w-full h-full object-cover" />
+                  <img src={p.image} alt={p.name || 'Product'} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 ) : null}
               </div>
             </CardBody>
             <CardHeader className="flex-col items-start px-4 pb-4">
               <div className="flex items-center justify-between w-full">
-                <h4 className="text-base font-semibold">{p.name}</h4>
+                <h4 className="text-base font-semibold transition-colors duration-300 group-hover:text-primary">{p.name}</h4>
                 <span className="text-sm text-default-500">${(p.price ?? p.default_price ?? 0) / 100}</span>
               </div>
               <p className="mt-1 text-sm text-default-500 line-clamp-2">{p.description}</p>
