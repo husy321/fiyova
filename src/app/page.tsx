@@ -1,35 +1,18 @@
 import { Header } from "@/components/site/header";
 import { Hero } from "@/components/site/hero";
 import { Footer } from "@/components/site/sections";
-import { Products } from "@/components/site/sections";
-import { Product, ProductsApiResponse } from "@/types";
+import { WhatWeSell, Benefits, HowItWorks, CTA } from "@/components/site/marketing";
 
-async function getProducts(): Promise<Product[]> {
-  try {
-    // Use full URL for server-side rendering
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : process.env.NEXT_PUBLIC_BASE_URL || 'https://fiyova.co';
-    const url = `${baseUrl}/api/dodo/products`;
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) {
-      return [];
-    }
-    const data: ProductsApiResponse = await res.json();
-    return data.products || [];
-  } catch {
-    return [];
-  }
-}
-
-export default async function Home() {
-  const products = await getProducts();
+export default function Home() {
   return (
     <div className="font-sans min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
         <Hero />
-        <Products products={products} />
+        <WhatWeSell />
+        <Benefits />
+        <HowItWorks />
+        <CTA />
       </main>
       <Footer />
     </div>
