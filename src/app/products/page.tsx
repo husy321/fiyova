@@ -95,12 +95,12 @@ export default function ProductsPage() {
       {products.length === 0 ? (
         <p className="text-center text-foreground/70">No products available.</p>
       ) : (
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="flex flex-wrap gap-6 justify-center">
         {products.map((p: Product) => {
           const id = p.product_id ?? p.id;
           const slug = idToSlug.get(id) ?? toSlug(p.name ?? String(id));
           return (
-          <Card key={id} className="max-w-[400px]">
+          <Card key={id} className="w-[300px] h-[300px]">
             <CardBody className="p-0">
               <div className="h-40 rounded-t-xl bg-default-100 flex items-center justify-center overflow-hidden">
                 {p.image ? (
@@ -114,7 +114,7 @@ export default function ProductsPage() {
                 <h4 className="text-base font-semibold">{p.name}</h4>
                 <span className="text-sm text-default-500">${(p.price ?? p.default_price ?? 0) / 100}</span>
               </div>
-              <p className="mt-1 text-sm text-default-500">{p.description}</p>
+              <p className="mt-1 text-sm text-default-500 line-clamp-2">{p.description}</p>
               <ProductCardActions slug={slug} product={p} />
             </CardHeader>
           </Card>
