@@ -3,20 +3,10 @@ import { ProductActions } from "@/components/products/product-actions";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/sections";
 import { buildSlugMap } from "@/lib/product-slug";
-import { Product, ProductsApiResponse } from "@/types";
+import { getAllProducts } from "@/lib/products";
+import { Product } from "@/types";
 
-async function getProducts(): Promise<Product[]> {
-  try {
-    const base = process.env.NEXT_PUBLIC_BASE_URL ?? "";
-    const url = base ? `${base}/api/dodo/products` : `/api/dodo/products`;
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return [];
-    const data: ProductsApiResponse = await res.json();
-    return data.products || [];
-  } catch {
-    return [];
-  }
-}
+export const revalidate = 60;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -24,18 +14,11 @@ type PageProps = {
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const products = await getProducts();
-  console.log("Products loaded:", products.length);
-  console.log("Looking for slug:", slug);
+  const products = await getAllProducts();
 
   const { slugToId } = buildSlugMap(products);
-  console.log("Slug to ID map:", Array.from(slugToId.entries()));
-
   const productId = slugToId.get(slug) ?? slug;
-  console.log("Resolved product ID:", productId);
-
   const product = products.find((p: Product) => (p.product_id ?? p.id) === productId);
-  console.log("Found product:", product);
 
   if (!product) return notFound();
 

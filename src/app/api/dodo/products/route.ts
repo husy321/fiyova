@@ -1,32 +1,28 @@
 import { NextResponse } from "next/server";
-import { getDodoClient } from "@/lib/dodo";
+import { getAllProducts } from "@/lib/products";
 
 export async function GET() {
   try {
     if (!process.env.DODO_PAYMENTS_API_KEY) {
       return NextResponse.json({ error: "Missing DODO_PAYMENTS_API_KEY" }, { status: 500 });
     }
-    
-    console.log("API Key found, length:", process.env.DODO_PAYMENTS_API_KEY?.length);
-    console.log("DODO_MODE:", process.env.DODO_MODE);
-    
-    const client = getDodoClient();
-    // Primary: SDK (auto-paginate through every page)
+
+    // Primary: shared cached loader (SDK with auto-pagination + revalidation)
     try {
-      console.log("Trying SDK products.list() with auto-pagination");
-      const products = [];
-      for await (const product of client.products.list({ page_size: 100 })) {
-        products.push(product);
+      const products = await getAllProducts();
+      if (products.length > 0) {
+        return NextResponse.json({ products }, {
+          status: 200,
+          headers: {
+            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+          }
+        });
       }
-      console.log("SDK products count:", products.length);
-      return NextResponse.json({ products }, {
-        status: 200,
-        headers: {
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
-        }
-      });
+      // Empty result: fall through to the REST fallback below in case the
+      // cached SDK call silently failed on a prior request.
+      throw new Error("No products from cached loader");
     } catch (sdkErr) {
-      console.log("SDK failed, trying REST fallback:", sdkErr);
+      console.log("SDK/cache failed, trying REST fallback:", sdkErr);
       // Fallback: direct REST with manual pagination
       const mode = process.env.DODO_MODE === "live" ? "live" : "test";
       const base = process.env.DODO_API_BASE || (mode === "live" ? "https://live.dodopayments.com" : "https://test.dodopayments.com");

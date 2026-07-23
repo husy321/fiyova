@@ -13,7 +13,6 @@ import { usePathname } from "next/navigation";
 export function Header() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<{ id: string; email: string; name: string; role?: string } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const { getCartCount, isLoaded: cartLoaded } = useCart();
   const pathname = usePathname();
@@ -31,7 +30,6 @@ export function Header() {
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-    setIsLoading(false);
   }, []);
 
   const logout = () => {
@@ -39,8 +37,6 @@ export function Header() {
     setUser(null);
     window.location.href = "/";
   };
-
-  console.log("Header: user state:", user, "isLoading:", isLoading);
 
   return (
     <header className="sticky top-0 z-30 w-full backdrop-blur supports-[backdrop-filter]:bg-background/60">
