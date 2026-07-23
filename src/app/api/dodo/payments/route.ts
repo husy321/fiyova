@@ -3,7 +3,7 @@ import { getDodoClient } from "@/lib/dodo";
 
 export async function POST(request: Request) {
   try {
-    const { product_id, quantity = 1, product_cart, customer, redirect_url, billing } = await request.json();
+    const { product_id, quantity = 1, product_cart, customer, redirect_url, billing, discount_code } = await request.json();
 
     // Handle both single product and multiple products (cart)
     let finalProductCart;
@@ -76,6 +76,16 @@ export async function POST(request: Request) {
       const client = getDodoClient();
       console.log("Client created, attempting payment creation with SDK...");
 
+      // Normalize and pre-apply a discount code when provided
+      const normalizedDiscountCode =
+        typeof discount_code === "string" && discount_code.trim()
+          ? discount_code.trim().toUpperCase()
+          : undefined;
+
+      if (normalizedDiscountCode) {
+        console.log("Pre-applying discount code:", normalizedDiscountCode);
+      }
+
       // Use checkoutSessions.create as per Dodo SDK documentation
       const checkoutSession = await client.checkoutSessions.create({
         product_cart: finalProductCart,
@@ -83,9 +93,13 @@ export async function POST(request: Request) {
         return_url: redirect_url || process.env.DODO_REDIRECT_URL,
         billing_address: billingAddress,
         confirm: true,
+        // Pre-apply the code when supplied
+        ...(normalizedDiscountCode ? { discount_code: normalizedDiscountCode } : {}),
         feature_flags: {
           allow_phone_number_collection: false,
-          allow_tax_id: false
+          allow_tax_id: false,
+          // Let customers enter/change a discount code on Dodo's checkout page
+          allow_discount_code: true
         }
       });
 

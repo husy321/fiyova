@@ -24,6 +24,7 @@ function CheckoutContent() {
   const [address, setAddress] = useState("");
   const [state, setState] = useState("");
   const [zipcode, setZipcode] = useState("");
+  const [discountCode, setDiscountCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
@@ -122,6 +123,9 @@ function CheckoutContent() {
         zipcode: zipcode || "00000"
       };
 
+      // Optional discount code to pre-apply at checkout
+      const discount_code = discountCode.trim() ? discountCode.trim().toUpperCase() : undefined;
+
       if (isCartCheckout) {
         // Multi-item cart checkout
         if (!cartLoaded) {
@@ -142,7 +146,7 @@ function CheckoutContent() {
         const res = await fetch("/api/dodo/payments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product_cart, customer, billing }),
+          body: JSON.stringify({ product_cart, customer, billing, discount_code }),
         });
         const { payment, error } = await res.json();
         if (error) throw new Error(error);
@@ -181,7 +185,7 @@ function CheckoutContent() {
         const res = await fetch("/api/dodo/payments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product_id: match.product_id ?? match.id, quantity: 1, customer, billing }),
+          body: JSON.stringify({ product_id: match.product_id ?? match.id, quantity: 1, customer, billing, discount_code }),
         });
         const { payment, error } = await res.json();
         if (error) throw new Error(error);
@@ -348,6 +352,14 @@ function CheckoutContent() {
             variant="bordered"
           />
         </div>
+        <Input
+          label="Discount code"
+          placeholder="e.g. WELCOME10"
+          value={discountCode}
+          onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+          variant="bordered"
+          description="Have a promo code? Enter it here (optional)."
+        />
         <Button
           isLoading={loading}
           color="primary"
